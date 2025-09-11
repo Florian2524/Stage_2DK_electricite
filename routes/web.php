@@ -2,4 +2,4 @@
 
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', fn () => view('app'));
+Route::view('/', 'app')->name('home');
