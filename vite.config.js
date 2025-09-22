@@ -10,4 +10,16 @@ export default defineConfig({
     }),
     react(),
   ],
+  server: {
+    host: true,
+    strictPort: true,
+    port: Number(process.env.VITE_PORT) || 5173,
+    hmr: {
+      host: 'localhost',
+      port: Number(process.env.VITE_PORT) || 5173,
+      protocol: 'ws',
+    },
+    // 🔥 clé pour WSL/Windows + Docker
+    watch: { usePolling: true, interval: 300 },
+  },
 })
