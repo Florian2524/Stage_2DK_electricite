@@ -16,6 +16,14 @@ const SERVICES_ITEMS = [
   { label: "Dépannage", href: "/services/depannage" },
 ];
 
+// --- Anti-tremblement ---
+// On rétrécit le header si y >= SHRINK_DOWN,
+// et on ne le ré-agrandit que si y <= EXPAND_UP.
+// Un petit COOLDOWN empêche les bascules en rafale.
+const SHRINK_DOWN = 48;     // px (seuil pour passer en petit)
+const EXPAND_UP   = 8;      // px (seuil pour repasser en grand)
+const SWITCH_COOLDOWN_MS = 250;
+
 function setTheme(theme) {
   const root = document.documentElement;
   if (theme === "dark") root.classList.add("dark");
@@ -54,26 +62,74 @@ export default function Header() {
   };
   const scheduleCloseServices = () => {
     if (closeTimer.current) clearTimeout(closeTimer.current);
-    closeTimer.current = setTimeout(() => setServicesHoverOpen(false), 160); // petit délai anti-flicker
+    closeTimer.current = setTimeout(() => setServicesHoverOpen(false), 160);
   };
 
+  // Applique le thème stocké
+  useEffect(() => { setTheme(theme); }, [theme]);
+
+  // --- Anti-tremblement : rAF + hystérésis + cooldown
+  const scrolledRef = useRef(scrolled);
+  const lastSwitchRef = useRef(0);
+
+  useEffect(() => { scrolledRef.current = scrolled; }, [scrolled]);
+
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 10);
+    let ticking = false;
+
+    const onScroll = () => {
+      const y = window.scrollY || document.documentElement.scrollTop || 0;
+
+      if (ticking) return;
+      ticking = true;
+
+      window.requestAnimationFrame(() => {
+        const now = performance.now();
+        let next = scrolledRef.current;
+
+        if (!scrolledRef.current && y >= SHRINK_DOWN) next = true;
+        else if (scrolledRef.current && y <= EXPAND_UP) next = false;
+
+        if (next !== scrolledRef.current) {
+          if (now - lastSwitchRef.current >= SWITCH_COOLDOWN_MS) {
+            scrolledRef.current = next;
+            lastSwitchRef.current = now;
+            setScrolled(next);
+          }
+          // sinon, ignore la bascule pendant le cooldown
+        }
+        ticking = false;
+      });
+    };
+
+    // Init + listener
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
-  useEffect(() => { setTheme(theme); }, [theme]);
 
   const toggleTheme = () => setThemeState((t) => (t === "dark" ? "light" : "dark"));
   const handleNav = () => setMenuOpen(false);
+
+  // --- Ancrages (Accueil/Services) ---
+  const goTo = (id) => {
+    const el = document.getElementById(id);
+    if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
+  const handleAnchorClick = (e) => {
+    const href = e.currentTarget.getAttribute("href");
+    if (!href || !href.startsWith("#")) return;
+    e.preventDefault();
+    goTo(href.slice(1));
+  };
 
   return (
     <header
       className="sticky top-0 z-50 transition-all duration-200 bg-white dark:bg-white"
       aria-label="En-tête du site"
     >
-      <div className={`${scrolled ? "py-2" : "py-3"}`}>
+      {/* will-change aide juste le GPU; aucune incidence visuelle */}
+      <div className={`${scrolled ? "py-2" : "py-3"}`} style={{ willChange: "padding" }}>
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           {/* Barre principale */}
           <div className="flex items-center justify-between gap-3 text-neutral-900">
@@ -89,11 +145,12 @@ export default function Header() {
               />
             </a>
 
-            {/* Nav desktop */}
+            {/* Nav desktop (visuel intact) */}
             <nav className="hidden md:flex items-center gap-6" role="navigation" aria-label="Navigation principale">
-              <a href="/" className="hover:underline underline-offset-4">Accueil</a>
+              <a href="#hero" onClick={handleAnchorClick} className="hover:underline underline-offset-4">
+                Accueil
+              </a>
 
-              {/* Services: wrapper qui gère enter/leave + délai */}
               <div
                 className="relative"
                 onMouseEnter={openServices}
@@ -102,7 +159,8 @@ export default function Header() {
                 onBlur={scheduleCloseServices}
               >
                 <a
-                  href="/services"
+                  href="#services"
+                  onClick={handleAnchorClick}
                   className="hover:underline underline-offset-4"
                   aria-haspopup="true"
                   aria-expanded={servicesHoverOpen}
@@ -110,7 +168,6 @@ export default function Header() {
                   Services
                 </a>
 
-                {/* Menu déroulant — collé à l’onglet (pas de gap) */}
                 <div
                   onMouseEnter={openServices}
                   onMouseLeave={scheduleCloseServices}
@@ -161,7 +218,7 @@ export default function Header() {
                 <IconMail className="h-5 w-5" /> <span className="text-sm">{EMAIL_DISPLAY}</span>
               </a>
 
-              {/* CTA noir sur fond blanc */}
+              {/* CTA noir */}
               <a
                 href={CTA_URL}
                 className="inline-flex items-center justify-center rounded-full
@@ -171,9 +228,9 @@ export default function Header() {
                 {CTA_LABEL}
               </a>
 
-              {/* Dark toggle (le header reste blanc) */}
+              {/* Dark toggle */}
               <button
-                onClick={toggleTheme}
+                onClick={() => setThemeState((t) => (t === "dark" ? "light" : "dark"))}
                 className="ml-1 inline-flex h-9 w-9 items-center justify-center rounded-full
                 bg-neutral-100 hover:bg-neutral-200 text-neutral-900
                 focus:outline-none focus:ring-2 focus:ring-neutral-900"
@@ -201,7 +258,7 @@ export default function Header() {
         </div>
       </div>
 
-      {/* Drawer mobile (blanc aussi) */}
+      {/* Drawer mobile */}
       <div
         id="mobile-drawer"
         className={`fixed inset-0 z-50 md:hidden ${menuOpen ? "" : "pointer-events-none"}`}
@@ -216,7 +273,7 @@ export default function Header() {
           ${menuOpen ? "translate-x-0" : "translate-x-full"}`}
         >
           <div className="flex items-center justify-between px-4 py-3 border-b border-neutral-200">
-            <a href="/" onClick={handleNav} className="flex items-center gap-2">
+            <a href="/" onClick={() => setMenuOpen(false)} className="flex items-center gap-2">
               <img src={logoUrl} alt="2DK Électricité" className="h-10 w-auto" />
             </a>
             <button onClick={() => setMenuOpen(false)} className="p-2 rounded-full hover:bg-neutral-100" aria-label="Fermer le menu">
@@ -241,29 +298,50 @@ export default function Header() {
           </div>
 
           <nav className="p-2 text-base">
-            <a href="/" onClick={handleNav} className="block px-4 py-3 rounded-lg hover:bg-neutral-100">Accueil</a>
+            <a
+              href="#hero"
+              onClick={(e) => { e.preventDefault(); goTo("hero"); setMenuOpen(false); }}
+              className="block px-4 py-3 rounded-lg hover:bg-neutral-100"
+            >
+              Accueil
+            </a>
+
             <div className="px-2">
-              <button
-                onClick={() => setServicesOpen((v) => !v)}
-                className="w-full flex items-center justify-between px-2 py-3 rounded-lg hover:bg-neutral-100"
-                aria-expanded={servicesOpen}
-                aria-controls="services-accordion"
-              >
-                <span className="px-2">Services</span>
-                <span className={`mx-2 transition ${servicesOpen ? "rotate-90" : ""}`} aria-hidden>›</span>
-              </button>
+              <div className="w-full flex items-center justify-between px-2 py-3 rounded-lg hover:bg-neutral-100">
+                <span
+                  className="px-2"
+                  onClick={() => { goTo("services"); setMenuOpen(false); }}
+                  role="link"
+                  tabIndex={0}
+                  onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); goTo("services"); setMenuOpen(false); } }}
+                  aria-label="Aller à la section Services"
+                >
+                  Services
+                </span>
+                <button
+                  onClick={() => setServicesOpen((v) => !v)}
+                  className="mx-2"
+                  aria-expanded={servicesOpen}
+                  aria-controls="services-accordion"
+                  aria-label="Ouvrir le sous-menu Services"
+                >
+                  <span className={`block transition ${servicesOpen ? "rotate-90" : ""}`} aria-hidden>›</span>
+                </button>
+              </div>
+
               <div id="services-accordion" className={`overflow-hidden transition-[max-height] duration-200 ${servicesOpen ? "max-h-96" : "max-h-0"}`}>
                 <div className="flex flex-col gap-1 pb-2">
                   {SERVICES_ITEMS.map((it) => (
-                    <a key={it.href} href={it.href} onClick={handleNav} className="block rounded-md px-6 py-2 text-sm hover:bg-neutral-100">
+                    <a key={it.href} href={it.href} onClick={() => setMenuOpen(false)} className="block rounded-md px-6 py-2 text-sm hover:bg-neutral-100">
                       {it.label}
                     </a>
                   ))}
                 </div>
               </div>
             </div>
-            <a href="/realisations" onClick={handleNav} className="block px-4 py-3 rounded-lg hover:bg-neutral-100">Réalisations</a>
-            <a href="/contact" onClick={handleNav} className="block px-4 py-3 rounded-lg hover:bg-neutral-100">Contact</a>
+
+            <a href="/realisations" onClick={() => setMenuOpen(false)} className="block px-4 py-3 rounded-lg hover:bg-neutral-100">Réalisations</a>
+            <a href="/contact" onClick={() => setMenuOpen(false)} className="block px-4 py-3 rounded-lg hover:bg-neutral-100">Contact</a>
           </nav>
 
           <div className="mt-auto p-4 border-t border-neutral-200">
@@ -286,7 +364,7 @@ export default function Header() {
               </button>
               <a
                 href={CTA_URL}
-                onClick={handleNav}
+                onClick={() => setMenuOpen(false)}
                 className="ml-auto inline-flex items-center justify-center rounded-full
                 bg-neutral-900 px-4 py-2 font-medium text-white hover:bg-neutral-800 transition
                 focus:outline-none focus:ring-2 focus:ring-neutral-900"
