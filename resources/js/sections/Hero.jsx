@@ -1,78 +1,74 @@
 import React from "react";
 
+// Libellés / liens
+const CTA_PRIMARY_LABEL = "Contactez-nous";
+const CTA_PRIMARY_HREF = "/contact";
+const CTA_SECONDARY_LABEL = "Demande de devis";
+const CTA_SECONDARY_HREF = "/devis";
+
 export default function Hero() {
   return (
     <section
       id="hero"
-      className="relative scroll-mt-24"
       aria-label="Hero"
+      className="relative min-h-[92vh] flex items-center bg-gradient-to-r from-[#0B0B0B] via-[#161B24] to-[#3E495C] text-zinc-100"
     >
-      {/* Image de fond */}
-      <div
-        className="absolute inset-0 bg-cover bg-center"
-        style={{
-          backgroundImage:
-            "url('https://images.unsplash.com/photo-1581091223563-1b1a0f0a5cfa?q=80&w=1920&auto=format&fit=crop')",
-        }}
-        aria-hidden="true"
-      />
+      <div className="w-full">
+        <div className="mx-auto max-w-6xl px-6 md:px-10 xl:px-16">
+          {/* Titre multi-lignes avec accent couleur */}
+          <h1
+            className="font-extrabold tracking-tight text-4xl sm:text-5xl md:text-6xl xl:text-7xl leading-tight"
+          >
+            <span className="block">
+              Installation, Mise aux normes, Rénovation,
+            </span>
+            <span className="block">
+              Dépannage — <span className="text-[#F6C90E]">2DK Électricité</span>
+            </span>
+          </h1>
 
-      {/* Voile sombre façon dégradé gauche → droite (pour lisibilité du texte) */}
-      <div
-        className="absolute inset-0 bg-slate-900/65 md:bg-gradient-to-r md:from-slate-900/85 md:via-slate-900/60 md:to-slate-900/10"
-        aria-hidden="true"
-      />
+          {/* Sous-texte */}
+          <p className="mt-6 md:mt-8 max-w-3xl text-lg md:text-xl text-zinc-300">
+            Interventions rapides et travaux soignés pour particuliers et professionnels. Devis gratuit.
+          </p>
 
-      {/* Contenu */}
-      <div className="relative">
-        <div className="container-2dk min-h-[60vh] md:min-h-[70vh] lg:min-h-[75vh] flex items-center py-14 md:py-20">
-          <div className="max-w-3xl text-white">
-            {/* Gros titre (tu peux adapter le texte si tu veux coller mot à mot à l’exemple) */}
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold leading-tight tracking-tight">
-              Installation, Mise aux normes, Rénovation, Dépannage —{" "}
-              <span className="text-amber-400">2DK Électricité</span>
-            </h1>
+          {/* CTA */}
+          <div className="mt-10 md:mt-12 flex flex-col sm:flex-row gap-4 sm:gap-5">
+            <a
+              href={CTA_PRIMARY_HREF}
+              className="inline-flex items-center justify-center gap-3 rounded-2xl px-6 md:px-7 h-12 md:h-14 text-base md:text-lg font-semibold bg-red-600 hover:bg-red-700 active:translate-y-[1px] transition-all shadow-sm hover:shadow-md"
+            >
+              {/* Icône enveloppe */}
+              <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="h-5 w-5 md:h-6 md:w-6" fill="currentColor">
+                <path d="M2 6.5A2.5 2.5 0 0 1 4.5 4h15A2.5 2.5 0 0 1 22 6.5v11A2.5 2.5 0 0 1 19.5 20h-15A2.5 2.5 0 0 1 2 17.5v-11ZM5 7l7 4.5L19 7H5Z" />
+              </svg>
+              <span>{CTA_PRIMARY_LABEL}</span>
+            </a>
 
-            {/* Sous-texte */}
-            <p className="mt-5 text-lg md:text-xl text-white/85">
-              Interventions rapides et travaux soignés pour particuliers et professionnels. Devis gratuit.
-            </p>
+            <a
+              href={CTA_SECONDARY_HREF}
+              className="inline-flex items-center justify-center rounded-2xl px-6 md:px-7 h-12 md:h-14 text-base md:text-lg font-semibold border border-white/15 bg-white/5 hover:bg-white/10 active:translate-y-[1px] transition-all"
+            >
+              {CTA_SECONDARY_LABEL}
+            </a>
+          </div>
 
-            {/* CTA */}
-            <div className="mt-8 flex flex-wrap items-center gap-4">
-              <a
-                href="/contact?motif=contact"
-                className="inline-flex items-center gap-2 rounded-xl px-6 py-3 text-base font-semibold
-                           bg-red-600 text-white shadow hover:bg-red-500 transition"
-              >
-                {/* icône enveloppe simple */}
-                <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                  <path strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" d="M3 8l9 6 9-6M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
-                </svg>
-                Contactez-nous
-              </a>
-
-              <a
-                href="/contact?motif=devis"
-                className="inline-flex items-center rounded-xl px-6 py-3 text-base font-semibold
-                           border border-white/25 bg-white/10 text-white hover:bg-white/15 transition backdrop-blur"
-              >
-                Demande de devis
-              </a>
-            </div>
-
-            {/* Labels optionnels comme dans ton exemple */}
-            <div className="mt-6 flex flex-wrap gap-4 text-sm text-white/80">
-              <span className="inline-flex items-center gap-2">
-                <span className="h-2.5 w-2.5 rounded-full bg-amber-400" /> Devis gratuit
-              </span>
-              <span className="inline-flex items-center gap-2">
-                <span className="h-2.5 w-2.5 rounded-full bg-amber-400" /> Intervention rapide
-              </span>
-            </div>
+          {/* Badges */}
+          <div className="mt-6 flex flex-wrap items-center gap-x-8 gap-y-3 text-sm md:text-base text-zinc-300">
+            <span className="inline-flex items-center gap-2">
+              <span className="h-2.5 w-2.5 rounded-full bg-[#F6C90E]" />
+              Devis gratuit
+            </span>
+            <span className="inline-flex items-center gap-2">
+              <span className="h-2.5 w-2.5 rounded-full bg-[#F6C90E]" />
+              Intervention rapide
+            </span>
           </div>
         </div>
       </div>
+
+      {/* Respiration visuelle à droite */}
+      <div aria-hidden="true" className="pointer-events-none absolute inset-y-0 right-0 w-1/12 md:w-2/12 lg:w-3/12" />
     </section>
   );
 }
