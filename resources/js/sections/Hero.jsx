@@ -24,6 +24,7 @@ export default function Hero() {
             </span>
             <span className="block">
               Dépannage — <span className="text-[#F6C90E]">2DK Électricité</span>
+
             </span>
           </h1>
 

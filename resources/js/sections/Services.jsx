@@ -44,11 +44,12 @@ export default function Services() {
       aria-labelledby="prestations-title"
       className="bg-gradient-to-b from-white via-zinc-300 to-zinc-500"
     >
-      <div className="mx-auto max-w-6xl px-6 md:px-10 xl:px-16 py-12 md:py-16 lg:py-20">
+      {/* ↓↓↓ espace vertical réduit uniquement ici ↓↓↓ */}
+      <div className="mx-auto max-w-6xl px-6 md:px-10 xl:px-16 py-8 md:py-10 lg:py-12">
         <div className="mb-8 md:mb-10">
           <h2
             id="prestations-title"
-            className="text-3xl md:text-4xl font-extrabold tracking-tight text-zinc-900"
+            className="text-3xl md:text-4xl font-extrabold tracking-tight text-[#0B0B0B]"
           >
             Nos prestations
           </h2>
@@ -75,7 +76,8 @@ export default function Services() {
                   aria-hidden="true"
                 />
                 <div className="absolute inset-x-0 bottom-0 p-5 md:p-6">
-                  <h3 className="text-white text-lg md:text-xl font-semibold drop-shadow">
+                  {/* Titre lisible sur image → blanc par défaut, jaune au hover (texte uniquement) */}
+                  <h3 className="text-white group-hover:text-[#F6C90E] text-lg md:text-xl font-semibold drop-shadow transition-colors">
                     {item.title}
                   </h3>
                   <p
