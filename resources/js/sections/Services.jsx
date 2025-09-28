@@ -42,10 +42,12 @@ export default function Services() {
     <section
       id="prestations"
       aria-labelledby="prestations-title"
-      className="bg-gradient-to-b from-white via-zinc-300 to-zinc-500"
+      className="bg-gradient-to-b from-white via-zinc-300 to-zinc-500 py-20"
+
     >
       {/* ↓↓↓ espace vertical réduit uniquement ici ↓↓↓ */}
-      <div className="mx-auto max-w-6xl px-6 md:px-10 xl:px-16 py-8 md:py-10 lg:py-12">
+      <div className="mx-auto max-w-6xl px-6 md:px-10 xl:px-16">
+
         <div className="mb-8 md:mb-10">
           <h2
             id="prestations-title"
@@ -61,7 +63,8 @@ export default function Services() {
               key={item.key}
               href={item.href}
               aria-label={`${item.title} — en savoir plus`}
-              className="group relative block overflow-hidden rounded-3xl shadow-sm ring-1 ring-black/5 bg-white focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F6C90E] transition-shadow hover:shadow-md"
+             className="group relative block overflow-hidden rounded-xl shadow-sm ring-1 ring-black/5 bg-white focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F6C90E] transition-shadow hover:shadow-md"
+
             >
               <div className="relative aspect-[16/11] md:aspect-[4/3]">
                 <img

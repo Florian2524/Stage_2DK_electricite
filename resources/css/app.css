@@ -6,4 +6,13 @@
 .header-white{
   background-color: #FFFFFF;
 }
+@layer components {
+  .btn-red {
+    @apply inline-flex items-center justify-center gap-3 px-6 md:px-7 h-12 md:h-14
+           text-base md:text-lg font-semibold
+           bg-red-600 text-white border border-red-700
+           hover:bg-red-700 active:translate-y-[1px]
+           transition-all shadow-sm hover:shadow-md;
+  }
+}
 

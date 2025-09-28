@@ -35,11 +35,34 @@ export default function FinalCTA() {
             <p className="text-zinc-100">
               Des interventions rapides et soignées sur la CUB de Bordeaux.
             </p>
-            <ul className="mt-4 space-y-1 text-zinc-100">
-              <li>Tél : {COMPANY.phone}</li>
-              <li>Email : {COMPANY.email}</li>
-              <li>Zone : {COMPANY.address}</li>
-            </ul>
+            {/* Coordonnées (remplace tes <p> actuels par ceci) */}
+<ul className="mt-6 space-y-2 text-zinc-100">
+  <li className="flex items-center gap-3">
+    <svg className="h-4 w-4" viewBox="0 0 24 24" fill="currentColor">
+      <path d="M2 3a1 1 0 011-1h3a1 1 0 011 .78l.72 3.1a1 1 0 01-.29.97l-1.7 1.7a18 18 0 007.56 7.56l1.7-1.7a1 1 0 01.97-.29l3.1.72a1 1 0 01.78 1V21a1 1 0 01-1 1h-2C8.82 22 2 15.18 2 6V4a1 1 0 011-1z"/>
+    </svg>
+    <a href="tel:0500000000" className="hover:text-[#F6C90E] transition-colors">
+      05 00 00 00 00
+    </a>
+  </li>
+
+  <li className="flex items-center gap-3">
+    <svg className="h-4 w-4" viewBox="0 0 24 24" fill="currentColor">
+      <path d="M2 6.5A2.5 2.5 0 0 1 4.5 4h15A2.5 2.5 0 0 1 22 6.5v11A2.5 2.5 0 0 1 19.5 20h-15A2.5 2.5 0 0 1 2 17.5v-11ZM5 7l7 4.5L19 7H5Z"/>
+    </svg>
+    <a href="mailto:contact@2dk.fr" className="hover:text-[#F6C90E] transition-colors">
+      contact@2dk.fr
+    </a>
+  </li>
+
+  <li className="flex items-center gap-3">
+    <svg className="h-4 w-4" viewBox="0 0 24 24" fill="currentColor">
+      <path d="M12 2C8.13 2 5 5.13 5 9c0 7 7 13 7 13s7-6 7-13c0-3.87-3.13-7-7-7zM12 11.5a2.5 2.5 0 110-5 2.5 2.5 0 010 5z"/>
+    </svg>
+    Métropole de Bordeaux (CUB)
+  </li>
+</ul>
+
           </div>
 
           {/* Colonne 2 */}
@@ -70,11 +93,16 @@ export default function FinalCTA() {
             </h2>
 
             <a
-              href={CTA_PRIMARY_HREF}
-              className="mt-6 inline-flex h-12 items-center justify-center rounded-2xl bg-[#F6C90E] px-6 font-semibold text-black hover:bg-yellow-400 active:translate-y-[1px] transition-all shadow-sm hover:shadow-md"
-            >
-              {CTA_PRIMARY_LABEL}
-            </a>
+  href={CTA_PRIMARY_HREF}
+  className="inline-flex items-center justify-center gap-3 px-6 md:px-7 h-12 md:h-14 text-base md:text-lg font-semibold bg-red-600 text-white border border-red-700 hover:bg-red-700 active:translate-y-[1px] transition-all shadow-sm hover:shadow-md w-fit mt-8"
+>
+  {/* Icône enveloppe */}
+  <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="h-5 w-5 md:h-6 md:w-6" fill="currentColor">
+    <path d="M2 6.5A2.5 2.5 0 0 1 4.5 4h15A2.5 2.5 0 0 1 22 6.5v11A2.5 2.5 0 0 1 19.5 20h-15A2.5 2.5 0 0 1 2 17.5v-11ZM5 7l7 4.5L19 7H5Z" />
+  </svg>
+  <span>{CTA_PRIMARY_LABEL}</span>
+</a>
+
           </div>
         </div>
 
