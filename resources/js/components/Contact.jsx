@@ -69,7 +69,8 @@ export default function Contact() {
   return (
     <main className="bg-gradient-to-r from-[#0B0B0B] via-[#161B24] to-[#3E495C] text-zinc-100">
       <section aria-labelledby="contact-title">
-        <div className="mx-auto max-w-6xl px-6 md:px-10 xl:px-16 py-14 md:py-20">
+        <div className="mx-auto max-w-6xl px-6 md:px-10 xl:px-16 pt-8 md:pt-12 pb-14 md:pb-20">
+
           <div className="grid gap-8 md:gap-10 md:grid-cols-3">
             {/* Colonne gauche */}
             <aside className="md:col-span-1">
@@ -86,14 +87,19 @@ export default function Contact() {
               </p>
 
               <div className="mt-4 flex flex-wrap gap-3 text-sm">
-                <span className="inline-flex items-center gap-2 rounded-full border border-[#F6C90E]/30 bg-zinc-900/40 px-3 py-1">
-                  <span className="h-1.5 w-1.5 rounded-full bg-[#F6C90E]" />
-                  Devis gratuit
-                </span>
-                <span className="inline-flex items-center gap-2 rounded-full border border-[#F6C90E]/30 bg-zinc-900/40 px-3 py-1">
+                <span className="inline-flex items-center gap-2 border border-[#F6C90E]/30 bg-zinc-900/40 px-3 py-1">
+  <span className="h-1.5 w-1.5 rounded-full bg-[#F6C90E]" />
+  Devis gratuit
+</span>
+<span className="inline-flex items-center gap-2 border border-[#F6C90E]/30 bg-zinc-900/40 px-3 py-1">
+  <span className="h-1.5 w-1.5 rounded-full bg-[#F6C90E]" />
+  Intervention rapide
+</span>
+
+                {/* <span className="inline-flex items-center gap-2 rounded-full border border-[#F6C90E]/30 bg-zinc-900/40 px-3 py-1">
                   <span className="h-1.5 w-1.5 rounded-full bg-[#F6C90E]" />
                   Intervention rapide
-                </span>
+                </span> */}
               </div>
 
               <div className="mt-6 border border-zinc-800 hover:border-[#F6C90E]/40 transition bg-zinc-900/40 p-5">

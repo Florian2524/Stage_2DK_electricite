@@ -10,10 +10,11 @@ const CTA_SECONDARY_TO = "/contact";    // idem → même page Contact
 export default function Hero() {
   return (
     <section
-      id="hero"
-      aria-label="Hero"
-      className="relative min-h-[92vh] flex items-center bg-gradient-to-r from-[#0B0B0B] via-[#161B24] to-[#3E495C] text-zinc-100 py-16 md:py-24"
-    >
+  id="hero"
+  aria-label="Hero"
+  className="relative min-h-[92vh] flex items-center bg-gradient-to-r from-[#0B0B0B] via-[#161B24] to-[#3E495C] text-zinc-100 pt-8 md:pt-12 pb-16 md:pb-24"
+>
+
       <div className="w-full">
         <div className="mx-auto max-w-6xl px-6 md:px-10 xl:px-16">
           {/* Titre multi-lignes avec accent couleur */}
@@ -62,14 +63,14 @@ export default function Hero() {
 
           {/* Badges */}
           <div className="mt-6 flex flex-wrap items-center gap-x-8 gap-y-3 text-sm md:text-base text-zinc-300">
-            <span className="inline-flex items-center gap-2">
-              <span className="h-2.5 w-2.5 rounded-full bg-[#F6C90E]" />
-              Devis gratuit
-            </span>
-            <span className="inline-flex items-center gap-2">
-              <span className="h-2.5 w-2.5 rounded-full bg-[#F6C90E]" />
-              Intervention rapide
-            </span>
+            <span className="inline-flex items-center gap-2 border border-[#F6C90E]/30 bg-zinc-900/40 px-3 py-1">
+  <span className="h-1.5 w-1.5 rounded-full bg-[#F6C90E]" />
+  Devis gratuit
+</span>
+<span className="inline-flex items-center gap-2 border border-[#F6C90E]/30 bg-zinc-900/40 px-3 py-1">
+  <span className="h-1.5 w-1.5 rounded-full bg-[#F6C90E]" />
+  Intervention rapide
+</span>
           </div>
         </div>
       </div>

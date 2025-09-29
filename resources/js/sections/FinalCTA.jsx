@@ -90,23 +90,35 @@ export default function FinalCTA() {
               {LINKS.map((l) => (
                 <li key={l.to}>
                   <Link
-                    className="text-zinc-100 hover:text-[#F6C90E] transition-colors"
-                    to={l.to}
-                    onClick={(e) => {
-                      // Comportement identique pour le lien "Contactez-nous" du menu
-                      if (l.to === "/contact") {
-                        e.preventDefault();
-                        if (location.pathname === "/contact") {
-                          scrollTop();
-                        } else {
-                          navigate("/contact");
-                          setTimeout(() => scrollTop(), 0);
-                        }
-                      }
-                    }}
-                  >
-                    {l.label}
-                  </Link>
+  className="text-zinc-100 hover:text-[#F6C90E] transition-colors"
+  to={l.to}
+  onClick={(e) => {
+    if (l.to === "/contact") {
+      e.preventDefault();
+      if (location.pathname === "/contact") {
+        scrollTop();
+      } else {
+        navigate("/contact");
+        setTimeout(() => scrollTop(), 0);
+      }
+    }
+
+    if (l.to === "/") {
+      e.preventDefault();
+      if (location.pathname === "/") {
+        // Déjà sur la page d'accueil → juste remonter en haut
+        scrollTop();
+      } else {
+        // Sinon naviguer vers la home, puis scroller
+        navigate("/");
+        setTimeout(() => scrollTop(), 0);
+      }
+    }
+  }}
+>
+  {l.label}
+</Link>
+
                 </li>
               ))}
             </ul>

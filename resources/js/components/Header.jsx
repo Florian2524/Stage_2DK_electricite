@@ -22,6 +22,7 @@ const SHRINK_DOWN = 48;
 const EXPAND_UP   = 8;
 const SWITCH_COOLDOWN_MS = 250;
 
+// Thème
 function setTheme(theme) {
   const root = document.documentElement;
   if (theme === "dark") root.classList.add("dark");
@@ -35,7 +36,7 @@ function getInitialTheme() {
   return prefersDark ? "dark" : "light";
 }
 
-// Icônes
+// Icônes (compacts)
 const IconPhone = (p) => (<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" {...p}><path strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" d="M2 5a2 2 0 012-2h2a1 1 0 011 .76l1 4a1 1 0 01-.27.98l-1.6 1.6a16 16 0 007.53 7.53l1.6-1.6a1 1 0 01.98-.27l4 1a1 1 0 01.76 1v2a2 2 0 01-2 2h-1C9.16 22 2 14.84 2 6V5z"/></svg>);
 const IconMail  = (p) => (<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" {...p}><path strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" d="M3 8l9 6 9-6M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>);
 const IconSearch= (p) => (<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" {...p}><path strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" d="M21 21l-4.35-4.35M11 18a7 7 0 100-14 7 7 0 000 14z"/></svg>);
@@ -46,83 +47,55 @@ const IconMoon  = (p) => (<svg viewBox="0 0 24 24" fill="none" stroke="currentCo
 
 export default function Header() {
   const [theme, setThemeState] = useState(getInitialTheme);
-  const [scrolled, setScrolled] = useState(false);
+  const [isShrunk, setIsShrunk] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
-  const [servicesOpen, setServicesOpen] = useState(false); // mobile
+  const [servicesHoverOpen, setServicesHoverOpen] = useState(false);
   const [query, setQuery] = useState("");
+
+  // Scroll-spy: null | 'home' | 'services'
+  const [section, setSection] = useState/** @type {null | 'home' | 'services'} */(null);
 
   const location = useLocation();
   const navigate = useNavigate();
 
-  // --- Desktop dropdown state
-  const [servicesHoverOpen, setServicesHoverOpen] = useState(false);
+  // Dropdown desktop Services
   const closeTimer = useRef(null);
-  const openServices = () => {
-    if (closeTimer.current) clearTimeout(closeTimer.current);
-    setServicesHoverOpen(true);
-  };
-  const scheduleCloseServices = () => {
-    if (closeTimer.current) clearTimeout(closeTimer.current);
-    closeTimer.current = setTimeout(() => setServicesHoverOpen(false), 160);
-  };
+  const openServices = () => { if (closeTimer.current) clearTimeout(closeTimer.current); setServicesHoverOpen(true); };
+  const scheduleCloseServices = () => { if (closeTimer.current) clearTimeout(closeTimer.current); closeTimer.current = setTimeout(() => setServicesHoverOpen(false), 160); };
 
-  // Applique le thème stocké
+  // Thème
   useEffect(() => { setTheme(theme); }, [theme]);
 
-  // --- Anti-tremblement
-  const scrolledRef = useRef(scrolled);
-  const lastSwitchRef = useRef(0);
-  useEffect(() => { scrolledRef.current = scrolled; }, [scrolled]);
+  // Hauteur header + shrink
   useEffect(() => {
-    let ticking = false;
+    const lastSwitchRef = { current: 0 };
     const onScroll = () => {
-      const y = window.scrollY || document.documentElement.scrollTop || 0;
-      if (ticking) return; ticking = true;
-      window.requestAnimationFrame(() => {
-        const now = performance.now();
-        let next = scrolledRef.current;
-        if (!scrolledRef.current && y >= SHRINK_DOWN) next = true;
-        else if (scrolledRef.current && y <= EXPAND_UP) next = false;
-        if (next !== scrolledRef.current) {
-          if (now - lastSwitchRef.current >= SWITCH_COOLDOWN_MS) {
-            scrolledRef.current = next;
-            lastSwitchRef.current = now;
-            setScrolled(next);
-          }
-        }
-        ticking = false;
-      });
+      const y = window.scrollY || 0;
+      const now = performance.now();
+      const next = y >= SHRINK_DOWN ? true : y <= EXPAND_UP ? false : isShrunk;
+      if (next !== isShrunk && now - lastSwitchRef.current >= SWITCH_COOLDOWN_MS) {
+        lastSwitchRef.current = now;
+        setIsShrunk(next);
+      }
     };
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
-  }, []);
+  }, [isShrunk]);
 
   const toggleTheme = () => setThemeState((t) => (t === "dark" ? "light" : "dark"));
-  const handleNav = () => setMenuOpen(false);
 
-  // --- Ancrages
-  // Header.jsx
-const goTo = (id) => {
-  const el = document.getElementById(id);
-  if (!el) return;
-
-  const headerEl = document.querySelector("header");
-  const headerH = headerEl ? headerEl.getBoundingClientRect().height : 0;
-
-  // petit écart de confort de 8px
-  const y = el.getBoundingClientRect().top + window.scrollY - headerH - 8;
-  window.scrollTo({ top: Math.max(0, y), behavior: "smooth" });
-};
-
-  const handleAnchorClick = (e) => {
-    const href = e.currentTarget.getAttribute("href");
-    if (!href || !href.startsWith("#")) return;
-    e.preventDefault();
-    goTo(href.slice(1));
+  // Utilitaires scroll
+  const goTo = (id) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    const headerEl = document.querySelector("header");
+    const headerH = headerEl ? headerEl.getBoundingClientRect().height : 0;
+    const y = el.getBoundingClientRect().top + window.scrollY - headerH - 8;
+    window.scrollTo({ top: Math.max(0, y), behavior: "smooth" });
   };
 
-  // --- Accueil : si Home → scroll #hero, sinon → navigate("/")
+  // Accueil
   const handleAccueil = (e) => {
     e.preventDefault();
     if (location.pathname === "/") {
@@ -132,123 +105,168 @@ const goTo = (id) => {
     }
     setMenuOpen(false);
   };
-// Header.jsx
-const handleContact = (e) => {
-  e.preventDefault();
-  if (location.pathname === "/contact") {
-    // déjà sur la page → scroll en haut
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  } else {
-    navigate("/contact");
-  }
-  setMenuOpen(false);
-};
+
+  // Services (ancre)
+  const handleServices = (e) => {
+    e.preventDefault();
+    if (location.pathname === "/") {
+      goTo("prestations");
+    } else {
+      navigate("/", { state: { scrollTo: "prestations" } });
+    }
+    setMenuOpen(false);
+  };
+
+  // Contact
+  const handleContact = (e) => {
+    e.preventDefault();
+    if (location.pathname === "/contact") {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    } else {
+      navigate("/contact");
+    }
+    setMenuOpen(false);
+  };
+
+  // Scroll après navigation vers "/" avec intention
+  useEffect(() => {
+    if (location.pathname !== "/") return;
+    const target = location.state && location.state.scrollTo;
+    if (!target) return;
+    setTimeout(() => goTo(String(target)), 50);
+    navigate(location.pathname, { replace: true, state: {} });
+  }, [location, navigate]);
+
+  // --- Scroll-spy avec "zone active stricte"
+  // Si le scroll n'est pas dans #hero ni #prestations -> section = null (aucun surlignement)
+  useEffect(() => {
+    if (location.pathname !== "/") {
+      setSection(null);
+      return;
+    }
+    const headerEl = document.querySelector("header");
+
+    const compute = () => {
+      const headerH = headerEl ? headerEl.getBoundingClientRect().height : 0;
+      const hero = document.getElementById("hero");
+      const sev  = document.getElementById("prestations");
+
+      if (!hero && !sev) { setSection(null); return; }
+
+      // Ligne de référence (juste sous le header)
+      const probe = (window.scrollY || 0) + headerH + 1;
+
+      const inRange = (el) => {
+        if (!el) return false;
+        const top = el.offsetTop;
+        const bottom = top + el.offsetHeight;
+        // on retire 8px pour un petit confort visuel
+        return probe >= top && probe < (bottom - 8);
+      };
+
+      if (inRange(hero))      setSection("home");
+      else if (inRange(sev))  setSection("services");
+      else                    setSection(null); // ← désactive tout surlignement
+    };
+
+    compute();
+    window.addEventListener("scroll", compute, { passive: true });
+    window.addEventListener("resize", compute);
+    return () => {
+      window.removeEventListener("scroll", compute);
+      window.removeEventListener("resize", compute);
+    };
+  }, [location.pathname]);
+
+  // Styles onglets
+  const navBase = "border-b-2 transition-colors";
+  const navActive = "border-[#F6C90E] text-[#F6C90E]";
+  const navInactive = "border-transparent hover:border-[#F6C90E]";
+  const cls = (active) => `${navBase} ${active ? navActive : navInactive}`;
+
+  // État actif par onglet
+  const accueilActive =
+    location.pathname === "/" ? section === "home" : (location.pathname === "/");
+  const servicesRoute = location.pathname.startsWith("/services");
+  const servicesActive =
+    location.pathname === "/" ? section === "services" : servicesRoute;
 
   return (
-    <header
-      className="sticky top-0 z-50 transition-all duration-200 bg-white dark:bg-white"
-      aria-label="En-tête du site"
-    >
-      <div className={`${scrolled ? "py-2" : "py-3"}`} style={{ willChange: "padding" }}>
+    <header className="sticky top-0 z-50 transition-all duration-200 bg-white dark:bg-white" aria-label="En-tête du site">
+      <div className={`${isShrunk ? "py-2" : "py-3"}`} style={{ willChange: "padding" }}>
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between gap-3 text-neutral-900">
             {/* Logo → même comportement que Accueil */}
-<a
-  href="/"
-  onClick={handleAccueil}
-  className="shrink-0 flex items-center gap-2"
-  aria-label="Accueil"
->
-  <img
-    src={logoUrl}
-    alt="2DK Électricité"
-    className="transition-all w-auto"
-    style={{ height: scrolled ? "80px" : "96px" }}
-    loading="eager"
-    decoding="async"
-  />
-</a>
-
+            <a href="/" onClick={handleAccueil} className="shrink-0 flex items-center gap-2" aria-label="Accueil">
+              <img
+                src={logoUrl}
+                alt="2DK Électricité"
+                className="transition-all w-auto"
+                style={{ height: isShrunk ? "80px" : "96px" }}
+                loading="eager"
+                decoding="async"
+              />
+            </a>
 
             {/* Nav desktop */}
             <nav className="hidden md:flex items-center gap-6" role="navigation" aria-label="Navigation principale">
-              {/* Accueil → Home + scroll si déjà sur Home */}
-              <a
-                href="/"
-                onClick={handleAccueil}
-                className="border-b-2 border-transparent hover:border-[#F6C90E] transition-colors"
-              >
+              {/* Accueil */}
+              <a href="/" onClick={handleAccueil} className={cls(accueilActive)}>
                 Accueil
               </a>
 
               {/* Services + dropdown */}
-<div
-  className="relative"
-  onMouseEnter={openServices}
-  onMouseLeave={scheduleCloseServices}
-  onFocus={openServices}
-  onBlur={scheduleCloseServices}
->
-  <a
-    href="#prestations"   // ← changement : ancre correcte
-    onClick={handleAnchorClick}
-    className="border-b-2 border-transparent hover:border-[#F6C90E] transition-colors"
-    aria-haspopup="true"
-    aria-expanded={servicesHoverOpen}
-  >
-    Services
-  </a>
+              <div
+                className="relative"
+                onMouseEnter={openServices}
+                onMouseLeave={scheduleCloseServices}
+                onFocus={openServices}
+                onBlur={scheduleCloseServices}
+              >
+                <a
+                  href="#prestations"
+                  onClick={handleServices}
+                  className={cls(servicesActive)}
+                  aria-haspopup="true"
+                  aria-expanded={servicesHoverOpen}
+                >
+                  Services
+                </a>
 
-  {servicesHoverOpen && (
-    <div
-      className="absolute left-1/2 -translate-x-1/2 top-full mt-2
-                 rounded-xl border border-neutral-200 bg-white text-neutral-900
-                 shadow-lg ring-1 ring-black/5 z-[60] min-w-[220px] overflow-hidden"
-      role="menu"
-      aria-label="Sous-menu Services"
-    >
-      <div className="py-1">
-        {SERVICES_ITEMS.map((it) => (
-          <Link
-            key={it.href}
-            to={it.href}
-            className="block px-4 py-2 text-sm hover:bg-neutral-100"
-            role="menuitem"
-            onClick={() => setServicesHoverOpen(false)}
-          >
-            {it.label}
-          </Link>
-        ))}
-      </div>
-    </div>
-  )}
-</div>
-
+                {servicesHoverOpen && (
+                  <div
+                    className="absolute left-1/2 -translate-x-1/2 top-full mt-2
+                               rounded-xl border border-neutral-200 bg-white text-neutral-900
+                               shadow-lg ring-1 ring-black/5 z-[60] min-w-[220px] overflow-hidden"
+                    role="menu"
+                    aria-label="Sous-menu Services"
+                  >
+                    <div className="py-1">
+                      {SERVICES_ITEMS.map((it) => (
+                        <Link
+                          key={it.href}
+                          to={it.href}
+                          className="block px-4 py-2 text-sm hover:bg-neutral-100"
+                          role="menuitem"
+                          onClick={() => setServicesHoverOpen(false)}
+                        >
+                          {it.label}
+                        </Link>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
 
               {/* Réalisations */}
-              <NavLink
-                to="/realisations"
-                className={({ isActive }) =>
-                  "border-b-2 transition-colors " +
-                  (isActive ? "border-[#F6C90E] text-[#F6C90E]" : "border-transparent hover:border-[#F6C90E]")
-                }
-              >
+              <NavLink to="/realisations" className={({ isActive }) => cls(isActive)}>
                 Réalisations
               </NavLink>
 
               {/* Contact */}
-              {/* Contact */}
-<NavLink
-  to="/contact"
-  onClick={handleContact}   // ← ajout
-  className={({ isActive }) =>
-    "border-b-2 transition-colors " +
-    (isActive ? "border-[#F6C90E] text-[#F6C90E]" : "border-transparent hover:border-[#F6C90E]")
-  }
->
-  Contact
-</NavLink>
-
+              <NavLink to="/contact" onClick={handleContact} className={({ isActive }) => cls(isActive)}>
+                Contact
+              </NavLink>
             </nav>
 
             {/* Actions droite (desktop) */}
@@ -283,7 +301,7 @@ const handleContact = (e) => {
               </Link>
 
               <button
-                onClick={() => setThemeState((t) => (t === "dark" ? "light" : "dark"))}
+                onClick={toggleTheme}
                 className="ml-1 inline-flex h-9 w-9 items-center justify-center rounded-full
                            bg-neutral-100 hover:bg-neutral-200 text-neutral-900
                            focus:outline-none focus:ring-2 focus:ring-neutral-900"
@@ -311,16 +329,15 @@ const handleContact = (e) => {
         </div>
       </div>
 
-      {/* Drawer mobile : pense à appeler handleAccueil pour le lien Accueil */}
-      {/* Exemple : */}
+      {/* Drawer mobile : adapte si besoin */}
       {/*
       <div id="mobile-drawer" className={menuOpen ? "block" : "hidden"}>
         <button onClick={() => setMenuOpen(false)} aria-label="Fermer le menu"><IconClose className="h-7 w-7" /></button>
         <nav className="mt-4 flex flex-col gap-3">
-          <a href="/" onClick={handleAccueil}>Accueil</a>
-          <NavLink to="/contact" onClick={() => setMenuOpen(false)}>Contact</NavLink>
-          <Link to="/services/installation" onClick={() => setMenuOpen(false)}>Installation</Link>
-          {/* ... *-/}
+          <a href="/" onClick={handleAccueil} className={cls(location.pathname === "/" ? section === "home" : location.pathname === "/")}>Accueil</a>
+          <a href="#prestations" onClick={handleServices} className={cls(location.pathname === "/" ? section === "services" : location.pathname.startsWith("/services"))}>Services</a>
+          <NavLink to="/realisations" className={({isActive}) => cls(isActive)}>Réalisations</NavLink>
+          <NavLink to="/contact" className={({isActive}) => cls(isActive)} onClick={handleContact}>Contact</NavLink>
         </nav>
       </div>
       */}
