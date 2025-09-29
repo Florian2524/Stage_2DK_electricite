@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
+import { Link, NavLink, useLocation, useNavigate } from "react-router-dom";
 import logoUrl from "../../images/logo.png";
 
 // --- Constantes rapides ---
@@ -17,8 +18,8 @@ const SERVICES_ITEMS = [
 ];
 
 // --- Anti-tremblement ---
-const SHRINK_DOWN = 48;     // px (seuil pour passer en petit)
-const EXPAND_UP   = 8;      // px (seuil pour repasser en grand)
+const SHRINK_DOWN = 48;
+const EXPAND_UP   = 8;
 const SWITCH_COOLDOWN_MS = 250;
 
 function setTheme(theme) {
@@ -34,7 +35,7 @@ function getInitialTheme() {
   return prefersDark ? "dark" : "light";
 }
 
-// Icônes (héritent de currentColor)
+// Icônes
 const IconPhone = (p) => (<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" {...p}><path strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" d="M2 5a2 2 0 012-2h2a1 1 0 011 .76l1 4a1 1 0 01-.27.98l-1.6 1.6a16 16 0 007.53 7.53l1.6-1.6a1 1 0 01.98-.27l4 1a1 1 0 01.76 1v2a2 2 0 01-2 2h-1C9.16 22 2 14.84 2 6V5z"/></svg>);
 const IconMail  = (p) => (<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" {...p}><path strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" d="M3 8l9 6 9-6M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>);
 const IconSearch= (p) => (<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" {...p}><path strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" d="M21 21l-4.35-4.35M11 18a7 7 0 100-14 7 7 0 000 14z"/></svg>);
@@ -49,6 +50,9 @@ export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [servicesOpen, setServicesOpen] = useState(false); // mobile
   const [query, setQuery] = useState("");
+
+  const location = useLocation();
+  const navigate = useNavigate();
 
   // --- Desktop dropdown state
   const [servicesHoverOpen, setServicesHoverOpen] = useState(false);
@@ -65,19 +69,15 @@ export default function Header() {
   // Applique le thème stocké
   useEffect(() => { setTheme(theme); }, [theme]);
 
-  // --- Anti-tremblement : rAF + hystérésis + cooldown
+  // --- Anti-tremblement
   const scrolledRef = useRef(scrolled);
   const lastSwitchRef = useRef(0);
-
   useEffect(() => { scrolledRef.current = scrolled; }, [scrolled]);
-
   useEffect(() => {
     let ticking = false;
     const onScroll = () => {
       const y = window.scrollY || document.documentElement.scrollTop || 0;
-      if (ticking) return;
-      ticking = true;
-
+      if (ticking) return; ticking = true;
       window.requestAnimationFrame(() => {
         const now = performance.now();
         let next = scrolledRef.current;
@@ -101,17 +101,48 @@ export default function Header() {
   const toggleTheme = () => setThemeState((t) => (t === "dark" ? "light" : "dark"));
   const handleNav = () => setMenuOpen(false);
 
-  // --- Ancrages ---
-  const goTo = (id) => {
-    const el = document.getElementById(id);
-    if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
-  };
+  // --- Ancrages
+  // Header.jsx
+const goTo = (id) => {
+  const el = document.getElementById(id);
+  if (!el) return;
+
+  const headerEl = document.querySelector("header");
+  const headerH = headerEl ? headerEl.getBoundingClientRect().height : 0;
+
+  // petit écart de confort de 8px
+  const y = el.getBoundingClientRect().top + window.scrollY - headerH - 8;
+  window.scrollTo({ top: Math.max(0, y), behavior: "smooth" });
+};
+
   const handleAnchorClick = (e) => {
     const href = e.currentTarget.getAttribute("href");
     if (!href || !href.startsWith("#")) return;
     e.preventDefault();
     goTo(href.slice(1));
   };
+
+  // --- Accueil : si Home → scroll #hero, sinon → navigate("/")
+  const handleAccueil = (e) => {
+    e.preventDefault();
+    if (location.pathname === "/") {
+      goTo("hero");
+    } else {
+      navigate("/");
+    }
+    setMenuOpen(false);
+  };
+// Header.jsx
+const handleContact = (e) => {
+  e.preventDefault();
+  if (location.pathname === "/contact") {
+    // déjà sur la page → scroll en haut
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  } else {
+    navigate("/contact");
+  }
+  setMenuOpen(false);
+};
 
   return (
     <header
@@ -121,77 +152,107 @@ export default function Header() {
       <div className={`${scrolled ? "py-2" : "py-3"}`} style={{ willChange: "padding" }}>
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between gap-3 text-neutral-900">
-            {/* Logo */}
-            <a href="/" className="shrink-0 flex items-center gap-2" aria-label="Accueil">
-              <img
-                src={logoUrl}
-                alt="2DK Électricité"
-                className="transition-all w-auto"
-                style={{ height: scrolled ? "80px" : "96px" }}
-                loading="eager"
-                decoding="async"
-              />
-            </a>
+            {/* Logo → même comportement que Accueil */}
+<a
+  href="/"
+  onClick={handleAccueil}
+  className="shrink-0 flex items-center gap-2"
+  aria-label="Accueil"
+>
+  <img
+    src={logoUrl}
+    alt="2DK Électricité"
+    className="transition-all w-auto"
+    style={{ height: scrolled ? "80px" : "96px" }}
+    loading="eager"
+    decoding="async"
+  />
+</a>
+
 
             {/* Nav desktop */}
             <nav className="hidden md:flex items-center gap-6" role="navigation" aria-label="Navigation principale">
-              <a href="#hero" onClick={handleAnchorClick} className="border-b-2 border-transparent hover:border-[#F6C90E] transition-colors">
+              {/* Accueil → Home + scroll si déjà sur Home */}
+              <a
+                href="/"
+                onClick={handleAccueil}
+                className="border-b-2 border-transparent hover:border-[#F6C90E] transition-colors"
+              >
                 Accueil
               </a>
 
               {/* Services + dropdown */}
-              <div
-                className="relative"
-                onMouseEnter={openServices}
-                onMouseLeave={scheduleCloseServices}
-                onFocus={openServices}
-                onBlur={scheduleCloseServices}
+<div
+  className="relative"
+  onMouseEnter={openServices}
+  onMouseLeave={scheduleCloseServices}
+  onFocus={openServices}
+  onBlur={scheduleCloseServices}
+>
+  <a
+    href="#prestations"   // ← changement : ancre correcte
+    onClick={handleAnchorClick}
+    className="border-b-2 border-transparent hover:border-[#F6C90E] transition-colors"
+    aria-haspopup="true"
+    aria-expanded={servicesHoverOpen}
+  >
+    Services
+  </a>
+
+  {servicesHoverOpen && (
+    <div
+      className="absolute left-1/2 -translate-x-1/2 top-full mt-2
+                 rounded-xl border border-neutral-200 bg-white text-neutral-900
+                 shadow-lg ring-1 ring-black/5 z-[60] min-w-[220px] overflow-hidden"
+      role="menu"
+      aria-label="Sous-menu Services"
+    >
+      <div className="py-1">
+        {SERVICES_ITEMS.map((it) => (
+          <Link
+            key={it.href}
+            to={it.href}
+            className="block px-4 py-2 text-sm hover:bg-neutral-100"
+            role="menuitem"
+            onClick={() => setServicesHoverOpen(false)}
+          >
+            {it.label}
+          </Link>
+        ))}
+      </div>
+    </div>
+  )}
+</div>
+
+
+              {/* Réalisations */}
+              <NavLink
+                to="/realisations"
+                className={({ isActive }) =>
+                  "border-b-2 transition-colors " +
+                  (isActive ? "border-[#F6C90E] text-[#F6C90E]" : "border-transparent hover:border-[#F6C90E]")
+                }
               >
-                <a
-                  href="#services"
-                  onClick={handleAnchorClick}
-                  className="border-b-2 border-transparent hover:border-[#F6C90E] transition-colors"
-                  aria-haspopup="true"
-                  aria-expanded={servicesHoverOpen}
-                >
-                  Services
-                </a>
-
-                {servicesHoverOpen && (
-                  <div
-                    className="absolute left-1/2 -translate-x-1/2 top-full mt-2
-                               rounded-xl border border-neutral-200 bg-white text-neutral-900
-                               shadow-lg ring-1 ring-black/5 z-[60] min-w-[220px] overflow-hidden"
-                    role="menu"
-                    aria-label="Sous-menu Services"
-                  >
-                    <div className="py-1">
-                      {SERVICES_ITEMS.map((it) => (
-                        <a
-                          key={it.href}
-                          href={it.href}
-                          className="block px-4 py-2 text-sm hover:bg-neutral-100"
-                          role="menuitem"
-                        >
-                          {it.label}
-                        </a>
-                      ))}
-                    </div>
-                  </div>
-                )}
-              </div>
-
-              <a href="/realisations" className="border-b-2 border-transparent hover:border-[#F6C90E] transition-colors">
                 Réalisations
-              </a>
-              <a href="/contact" className="border-b-2 border-transparent hover:border-[#F6C90E] transition-colors">
-                Contact
-              </a>
+              </NavLink>
+
+              {/* Contact */}
+              {/* Contact */}
+<NavLink
+  to="/contact"
+  onClick={handleContact}   // ← ajout
+  className={({ isActive }) =>
+    "border-b-2 transition-colors " +
+    (isActive ? "border-[#F6C90E] text-[#F6C90E]" : "border-transparent hover:border-[#F6C90E]")
+  }
+>
+  Contact
+</NavLink>
+
             </nav>
 
             {/* Actions droite (desktop) */}
             <div className="hidden md:flex items-center gap-3">
-              {/* Recherche */}
               <form onSubmit={(e) => e.preventDefault()} className="relative" role="search" aria-label="Recherche sur le site">
                 <IconSearch className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-neutral-500" />
                 <input
@@ -205,7 +266,6 @@ export default function Header() {
                 />
               </form>
 
-              {/* Tel / mail */}
               <a href={TEL_LINK} className="hidden lg:flex items-center gap-2 text-neutral-900" title={TEL_DISPLAY}>
                 <IconPhone className="h-5 w-5" /> <span className="text-sm">{TEL_DISPLAY}</span>
               </a>
@@ -213,17 +273,15 @@ export default function Header() {
                 <IconMail className="h-5 w-5" /> <span className="text-sm">{EMAIL_DISPLAY}</span>
               </a>
 
-              {/* CTA */}
-              <a
-                href={CTA_URL}
+              <Link
+                to={CTA_URL}
                 className="inline-flex items-center justify-center rounded-full
                            bg-neutral-900 px-4 py-2 font-medium text-white hover:bg-neutral-800 transition
                            focus:outline-none focus:ring-2 focus:ring-neutral-900"
               >
                 {CTA_LABEL}
-              </a>
+              </Link>
 
-              {/* Dark toggle */}
               <button
                 onClick={() => setThemeState((t) => (t === "dark" ? "light" : "dark"))}
                 className="ml-1 inline-flex h-9 w-9 items-center justify-center rounded-full
@@ -253,8 +311,19 @@ export default function Header() {
         </div>
       </div>
 
-      {/* Drawer mobile (inchangé) */}
-      {/* ... ton code mobile identique ... */}
+      {/* Drawer mobile : pense à appeler handleAccueil pour le lien Accueil */}
+      {/* Exemple : */}
+      {/*
+      <div id="mobile-drawer" className={menuOpen ? "block" : "hidden"}>
+        <button onClick={() => setMenuOpen(false)} aria-label="Fermer le menu"><IconClose className="h-7 w-7" /></button>
+        <nav className="mt-4 flex flex-col gap-3">
+          <a href="/" onClick={handleAccueil}>Accueil</a>
+          <NavLink to="/contact" onClick={() => setMenuOpen(false)}>Contact</NavLink>
+          <Link to="/services/installation" onClick={() => setMenuOpen(false)}>Installation</Link>
+          {/* ... *-/}
+        </nav>
+      </div>
+      */}
     </header>
   );
 }
