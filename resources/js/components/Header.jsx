@@ -19,7 +19,7 @@ const SERVICES_ITEMS = [
 
 // --- Anti-tremblement ---
 const SHRINK_DOWN = 48;
-const EXPAND_UP   = 8;
+const EXPAND_UP = 8;
 const SWITCH_COOLDOWN_MS = 250;
 
 // Thème
@@ -37,13 +37,42 @@ function getInitialTheme() {
 }
 
 // Icônes (compacts)
-const IconPhone = (p) => (<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" {...p}><path strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" d="M2 5a2 2 0 012-2h2a1 1 0 011 .76l1 4a1 1 0 01-.27.98l-1.6 1.6a16 16 0 007.53 7.53l1.6-1.6a1 1 0 01.98-.27l4 1a1 1 0 01.76 1v2a2 2 0 01-2 2h-1C9.16 22 2 14.84 2 6V5z"/></svg>);
-const IconMail  = (p) => (<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" {...p}><path strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" d="M3 8l9 6 9-6M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>);
-const IconSearch= (p) => (<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" {...p}><path strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" d="M21 21l-4.35-4.35M11 18a7 7 0 100-14 7 7 0 000 14z"/></svg>);
-const IconMenu  = (p) => (<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" {...p}><path strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16"/></svg>);
-const IconClose = (p) => (<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" {...p}><path strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>);
-const IconSun   = (p) => (<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" {...p}><circle cx="12" cy="12" r="4" strokeWidth="2"/><path strokeWidth="2" strokeLinecap="round" d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>);
-const IconMoon  = (p) => (<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" {...p}><path strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" d="M21 12.79A9 9 0 1111.21 3a7 7 0 109.79 9.79z"/></svg>);
+const IconPhone = (p) => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" {...p}>
+    <path strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" d="M2 5a2 2 0 012-2h2a1 1 0 011 .76l1 4a1 1 0 01-.27.98l-1.6 1.6a16 16 0 007.53 7.53l1.6-1.6a1 1 0 01.98-.27l4 1a1 1 0 01.76 1v2a2 2 0 01-2 2h-1C9.16 22 2 14.84 2 6V5z"/>
+  </svg>
+);
+const IconMail = (p) => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" {...p}>
+    <path strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" d="M3 8l9 6 9-6M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+  </svg>
+);
+const IconSearch = (p) => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" {...p}>
+    <path strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" d="M21 21l-4.35-4.35M11 18a7 7 0 100-14 7 7 0 000 14z"/>
+  </svg>
+);
+const IconMenu = (p) => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" {...p}>
+    <path strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16"/>
+  </svg>
+);
+const IconClose = (p) => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" {...p}>
+    <path strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12"/>
+  </svg>
+);
+const IconSun = (p) => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" {...p}>
+    <circle cx="12" cy="12" r="4" strokeWidth="2"/>
+    <path strokeWidth="2" strokeLinecap="round" d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/>
+  </svg>
+);
+const IconMoon = (p) => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" {...p}>
+    <path strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" d="M21 12.79A9 9 0 1111.21 3a7 7 0 109.79 9.79z"/>
+  </svg>
+);
 
 export default function Header() {
   const [theme, setThemeState] = useState(getInitialTheme);
@@ -52,11 +81,15 @@ export default function Header() {
   const [servicesHoverOpen, setServicesHoverOpen] = useState(false);
   const [query, setQuery] = useState("");
 
-  // Scroll-spy: null | 'home' | 'services'
+  // --- état du surlignage ---
+  // null | 'home' | 'services'
   const [section, setSection] = useState/** @type {null | 'home' | 'services'} */(null);
 
   const location = useLocation();
   const navigate = useNavigate();
+
+  // Hover global prioritaire ?
+  const hoverActiveRef = useRef(false);
 
   // Dropdown desktop Services
   const closeTimer = useRef(null);
@@ -66,7 +99,30 @@ export default function Header() {
   // Thème
   useEffect(() => { setTheme(theme); }, [theme]);
 
-  // Hauteur header + shrink
+  // Mesures
+  const getHeaderH = () => document.querySelector("header")?.getBoundingClientRect().height || 0;
+
+  // Calcule la section “vue” par une ligne sous le header (fallback si pas de hover)
+  const recomputeSection = () => {
+    if (hoverActiveRef.current) return; // le hover garde la priorité
+    if (location.pathname !== "/") { setSection(null); return; }
+    const hero = document.getElementById("hero");
+    const sev  = document.getElementById("prestations");
+    if (!hero && !sev) { setSection(null); return; }
+
+    const probe = getHeaderH() + 6; // ligne sous le header
+    const inRange = (el) => {
+      if (!el) return false;
+      const r = el.getBoundingClientRect();
+      return r.top <= probe && r.bottom - 8 > probe;
+    };
+
+    if (inRange(sev)) setSection("services");
+    else if (inRange(hero)) setSection("home");
+    else setSection(null);
+  };
+
+  // Shrink
   useEffect(() => {
     const lastSwitchRef = { current: 0 };
     const onScroll = () => {
@@ -85,118 +141,124 @@ export default function Header() {
 
   const toggleTheme = () => setThemeState((t) => (t === "dark" ? "light" : "dark"));
 
-  // Utilitaires scroll
+  // Scroll util
   const goTo = (id) => {
     const el = document.getElementById(id);
     if (!el) return;
-    const headerEl = document.querySelector("header");
-    const headerH = headerEl ? headerEl.getBoundingClientRect().height : 0;
-    const y = el.getBoundingClientRect().top + window.scrollY - headerH - 8;
+    const y = window.scrollY + el.getBoundingClientRect().top - getHeaderH() - 8;
     window.scrollTo({ top: Math.max(0, y), behavior: "smooth" });
+    requestAnimationFrame(recomputeSection);
+    setTimeout(recomputeSection, 120);
+    setTimeout(recomputeSection, 420);
   };
 
   // Accueil
   const handleAccueil = (e) => {
     e.preventDefault();
-    if (location.pathname === "/") {
-      goTo("hero");
-    } else {
-      navigate("/");
-    }
+    setSection("home");
+    if (location.pathname === "/") goTo("hero");
+    else navigate("/");
     setMenuOpen(false);
   };
 
-  // Services (ancre)
+  // Services
   const handleServices = (e) => {
     e.preventDefault();
-    if (location.pathname === "/") {
-      goTo("prestations");
-    } else {
-      navigate("/", { state: { scrollTo: "prestations" } });
-    }
+    setSection("services");
+    if (location.pathname === "/") goTo("prestations");
+    else navigate("/", { state: { scrollTo: "prestations" } });
     setMenuOpen(false);
   };
 
   // Contact
   const handleContact = (e) => {
     e.preventDefault();
-    if (location.pathname === "/contact") {
-      window.scrollTo({ top: 0, behavior: "smooth" });
-    } else {
-      navigate("/contact");
-    }
+    if (location.pathname === "/contact") window.scrollTo({ top: 0, behavior: "smooth" });
+    else navigate("/contact");
     setMenuOpen(false);
   };
 
-  // Scroll après navigation vers "/" avec intention
+  // Scroll après navigation vers "/"
   useEffect(() => {
     if (location.pathname !== "/") return;
     const target = location.state && location.state.scrollTo;
     if (!target) return;
-    setTimeout(() => goTo(String(target)), 50);
+    setTimeout(() => {
+      goTo(String(target));
+      setSection(target === "prestations" ? "services" : "home");
+    }, 50);
     navigate(location.pathname, { replace: true, state: {} });
   }, [location, navigate]);
 
-  // --- Scroll-spy avec "zone active stricte"
-  // Si le scroll n'est pas dans #hero ni #prestations -> section = null (aucun surlignement)
+  // --- HOVER PAR POSITION DE LA SOURIS SUR LES SECTIONS (prioritaire) ---
   useEffect(() => {
-    if (location.pathname !== "/") {
-      setSection(null);
-      return;
-    }
-    const headerEl = document.querySelector("header");
+    if (location.pathname !== "/") return;
 
-    const compute = () => {
-      const headerH = headerEl ? headerEl.getBoundingClientRect().height : 0;
-      const hero = document.getElementById("hero");
-      const sev  = document.getElementById("prestations");
+    const hero = document.getElementById("hero");
+    const sev  = document.getElementById("prestations");
+    if (!hero && !sev) return;
 
-      if (!hero && !sev) { setSection(null); return; }
-
-      // Ligne de référence (juste sous le header)
-      const probe = (window.scrollY || 0) + headerH + 1;
-
-      const inRange = (el) => {
-        if (!el) return false;
-        const top = el.offsetTop;
-        const bottom = top + el.offsetHeight;
-        // on retire 8px pour un petit confort visuel
-        return probe >= top && probe < (bottom - 8);
-      };
-
-      if (inRange(hero))      setSection("home");
-      else if (inRange(sev))  setSection("services");
-      else                    setSection(null); // ← désactive tout surlignement
+    const onEnterHero = () => { hoverActiveRef.current = true; setSection("home"); };
+    const onLeaveHero = (e) => {
+      if (sev && e?.relatedTarget && sev.contains(e.relatedTarget)) return;
+      hoverActiveRef.current = false;
+      recomputeSection();
     };
 
-    compute();
-    window.addEventListener("scroll", compute, { passive: true });
-    window.addEventListener("resize", compute);
+    const onEnterSev = () => { hoverActiveRef.current = true; setSection("services"); };
+    const onLeaveSev = (e) => {
+      if (hero && e?.relatedTarget && hero.contains(e.relatedTarget)) return;
+      hoverActiveRef.current = false;
+      recomputeSection();
+    };
+
+    hero && hero.addEventListener("mouseenter", onEnterHero);
+    hero && hero.addEventListener("mouseleave", onLeaveHero);
+    sev  && sev.addEventListener("mouseenter", onEnterSev);
+    sev  && sev.addEventListener("mouseleave", onLeaveSev);
+
     return () => {
-      window.removeEventListener("scroll", compute);
-      window.removeEventListener("resize", compute);
+      hero && hero.removeEventListener("mouseenter", onEnterHero);
+      hero && hero.removeEventListener("mouseleave", onLeaveHero);
+      sev  && sev.removeEventListener("mouseenter", onEnterSev);
+      sev  && sev.removeEventListener("mouseleave", onLeaveSev);
     };
   }, [location.pathname]);
 
-  // Styles onglets
-  const navBase = "border-b-2 transition-colors";
-  const navActive = "border-[#F6C90E] text-[#F6C90E]";
-  const navInactive = "border-transparent hover:border-[#F6C90E]";
+  // --- Scroll-spy (fallback quand pas de hover) ---
+  useEffect(() => {
+    if (location.pathname !== "/") { setSection(null); return; }
+    const onScrollOrResize = () => recomputeSection();
+    recomputeSection();
+    window.addEventListener("scroll", onScrollOrResize, { passive: true });
+    window.addEventListener("resize", onScrollOrResize);
+    return () => {
+      window.removeEventListener("scroll", onScrollOrResize);
+      window.removeEventListener("resize", onScrollOrResize);
+    };
+  }, [location.pathname]);
+
+  // Styles onglets — typo + soulignement fin (déjà intégré précédemment)
+  const navBase =
+    "px-2 md:px-3 py-2 text-[15px] md:text-[16px] font-medium tracking-[0.01em] " +
+    "border-b-[1.5px] border-transparent transition-all duration-300";
+  const navActive =
+    "text-[#F6C90E] border-b-[1.5px] border-[#F6C90E] pb-1";
+  const navInactive =
+    "hover:text-[#F6C90E] hover:border-[#F6C90E]";
   const cls = (active) => `${navBase} ${active ? navActive : navInactive}`;
 
-  // État actif par onglet
-  const accueilActive =
-    location.pathname === "/" ? section === "home" : (location.pathname === "/");
+  // État actif
+  const accueilActive = location.pathname === "/" ? section === "home" : location.pathname === "/";
   const servicesRoute = location.pathname.startsWith("/services");
-  const servicesActive =
-    location.pathname === "/" ? section === "services" : servicesRoute;
+  const servicesActive = location.pathname === "/" ? section === "services" : servicesRoute;
 
   return (
     <header className="sticky top-0 z-50 transition-all duration-200 bg-white dark:bg-white" aria-label="En-tête du site">
       <div className={`${isShrunk ? "py-2" : "py-3"}`} style={{ willChange: "padding" }}>
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between gap-3 text-neutral-900">
-            {/* Logo → même comportement que Accueil */}
+            {/* Logo → Accueil */}
             <a href="/" onClick={handleAccueil} className="shrink-0 flex items-center gap-2" aria-label="Accueil">
               <img
                 src={logoUrl}
@@ -210,12 +272,9 @@ export default function Header() {
 
             {/* Nav desktop */}
             <nav className="hidden md:flex items-center gap-6" role="navigation" aria-label="Navigation principale">
-              {/* Accueil */}
-              <a href="/" onClick={handleAccueil} className={cls(accueilActive)}>
-                Accueil
-              </a>
+              <a href="/" onClick={handleAccueil} className={cls(accueilActive)}>Accueil</a>
 
-              {/* Services + dropdown */}
+              {/* Services + dropdown (visuel premium) */}
               <div
                 className="relative"
                 onMouseEnter={openServices}
@@ -226,47 +285,65 @@ export default function Header() {
                 <a
                   href="#prestations"
                   onClick={handleServices}
-                  className={cls(servicesActive)}
+                  className={cls(servicesActive) + " inline-flex items-center gap-1"}
                   aria-haspopup="true"
                   aria-expanded={servicesHoverOpen}
                 >
                   Services
+                  <span
+                    className={`transition-transform duration-200 inline-block ${servicesHoverOpen ? "rotate-180" : ""}`}
+                    aria-hidden="true"
+                  >
+                    ▾
+                  </span>
                 </a>
 
                 {servicesHoverOpen && (
                   <div
-                    className="absolute left-1/2 -translate-x-1/2 top-full mt-2
-                               rounded-xl border border-neutral-200 bg-white text-neutral-900
-                               shadow-lg ring-1 ring-black/5 z-[60] min-w-[220px] overflow-hidden"
+                    className={`
+                      absolute left-1/2 -translate-x-1/2 top-full mt-2 z-[60]
+                      min-w-[260px] overflow-hidden rounded-2xl bg-white text-neutral-900
+                      border border-neutral-200 shadow-[0_10px_30px_-10px_rgba(0,0,0,0.25)]
+                      ring-1 ring-black/5 origin-top animate-[menuIn_160ms_ease-out]
+                    `}
                     role="menu"
                     aria-label="Sous-menu Services"
                   >
-                    <div className="py-1">
+                    {/* Caret */}
+<span
+  className="absolute -top-1 left-1/2 -translate-x-1/2 block w-3 h-3 rotate-45 bg-white border-l border-t border-neutral-200"
+  aria-hidden="true"
+/>
+
+{/* Liseré jaune brand (après le caret → pas de trou) */}
+<div className="h-[3px] w-full bg-[#F6C90E] relative z-10" />
+
+
+                    <ul className="py-2">
                       {SERVICES_ITEMS.map((it) => (
-                        <Link
-                          key={it.href}
-                          to={it.href}
-                          className="block px-4 py-2 text-sm hover:bg-neutral-100"
-                          role="menuitem"
-                          onClick={() => setServicesHoverOpen(false)}
-                        >
-                          {it.label}
-                        </Link>
+                        <li key={it.href}>
+                          <Link
+                            to={it.href}
+                            role="menuitem"
+                            onClick={() => setServicesHoverOpen(false)}
+                            className="
+                              group flex items-start gap-3 px-4 py-3 text-[15px] leading-snug
+                              hover:bg-neutral-50 focus:bg-neutral-50 outline-none
+                            "
+                          >
+                            {/* Barre jaune au hover */}
+                            <span className="h-5 w-[3px] rounded-full bg-transparent group-hover:bg-[#F6C90E] mt-[2px]" />
+                            <span className="text-neutral-900">{it.label}</span>
+                          </Link>
+                        </li>
                       ))}
-                    </div>
+                    </ul>
                   </div>
                 )}
               </div>
 
-              {/* Réalisations */}
-              <NavLink to="/realisations" className={({ isActive }) => cls(isActive)}>
-                Réalisations
-              </NavLink>
-
-              {/* Contact */}
-              <NavLink to="/contact" onClick={handleContact} className={({ isActive }) => cls(isActive)}>
-                Contact
-              </NavLink>
+              <NavLink to="/realisations" className={({ isActive }) => cls(isActive)}>Réalisations</NavLink>
+              <NavLink to="/contact" onClick={handleContact} className={({ isActive }) => cls(isActive)}>Contact</NavLink>
             </nav>
 
             {/* Actions droite (desktop) */}
@@ -280,7 +357,7 @@ export default function Header() {
                   placeholder="Rechercher…"
                   className="w-40 focus:w-64 transition-[width] duration-200
                              rounded-full bg-neutral-100 text-neutral-900 placeholder-neutral-500
-                             pl-9 pr-3 py-2 outline-none focus:ring-2 focus:ring-neutral-900"
+                             pl-9 pr-3 py-2 outline-none focus:ring-2 focus:ring-[#F6C90E]"
                 />
               </form>
 
@@ -329,18 +406,31 @@ export default function Header() {
         </div>
       </div>
 
-      {/* Drawer mobile : adapte si besoin */}
-      {/*
-      <div id="mobile-drawer" className={menuOpen ? "block" : "hidden"}>
-        <button onClick={() => setMenuOpen(false)} aria-label="Fermer le menu"><IconClose className="h-7 w-7" /></button>
-        <nav className="mt-4 flex flex-col gap-3">
-          <a href="/" onClick={handleAccueil} className={cls(location.pathname === "/" ? section === "home" : location.pathname === "/")}>Accueil</a>
-          <a href="#prestations" onClick={handleServices} className={cls(location.pathname === "/" ? section === "services" : location.pathname.startsWith("/services"))}>Services</a>
-          <NavLink to="/realisations" className={({isActive}) => cls(isActive)}>Réalisations</NavLink>
-          <NavLink to="/contact" className={({isActive}) => cls(isActive)} onClick={handleContact}>Contact</NavLink>
-        </nav>
+      {/* Drawer mobile simple */}
+      <div
+        id="mobile-drawer"
+        className={`md:hidden fixed inset-0 z-[60] bg-black/40 ${menuOpen ? "block" : "hidden"}`}
+        onClick={() => setMenuOpen(false)}
+      >
+        <div
+          className="absolute right-0 top-0 h-full w-80 bg-white text-neutral-900 p-4 shadow-xl"
+          onClick={(e) => e.stopPropagation()}
+        >
+          <div className="flex items-center justify-between">
+            <span className="font-semibold">Menu</span>
+            <button aria-label="Fermer le menu" onClick={() => setMenuOpen(false)}>
+              <IconClose className="h-7 w-7" />
+            </button>
+          </div>
+
+          <nav className="mt-4 flex flex-col gap-3">
+            <a href="/" onClick={handleAccueil} className={cls(location.pathname === "/" ? section === "home" : location.pathname === "/")}>Accueil</a>
+            <a href="#prestations" onClick={handleServices} className={cls(location.pathname === "/" ? section === "services" : location.pathname.startsWith("/services"))}>Services</a>
+            <NavLink to="/realisations" className={({ isActive }) => cls(isActive)}>Réalisations</NavLink>
+            <NavLink to="/contact" className={({ isActive }) => cls(isActive)} onClick={handleContact}>Contact</NavLink>
+          </nav>
+        </div>
       </div>
-      */}
     </header>
   );
 }

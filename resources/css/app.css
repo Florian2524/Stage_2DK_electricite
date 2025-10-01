@@ -8,12 +8,15 @@
 }
 
 @layer components {
+  /* ===== Bouton rouge existant ===== */
   .btn-red {
     @apply inline-flex items-center justify-center gap-3 px-6 md:px-7 h-12 md:h-14
            text-base md:text-lg font-semibold
            bg-red-600 text-white border border-red-700
            hover:bg-red-700 active:translate-y-[1px]
            transition-all shadow-sm hover:shadow-md;
+    /* Couleur de halo pour .btn-halo */
+    --btn-shadow-rgb: 220, 38, 38; /* red-600 */
   }
 
   /* ===== 2DK components ===== */
@@ -27,7 +30,44 @@
 
   /* Système de boutons */
   .btn         { @apply inline-flex items-center justify-center gap-2 h-12 md:h-14 px-6 md:px-7 text-base md:text-lg font-semibold rounded-xl transition-all shadow-sm hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#F6C90E] focus-visible:ring-offset-2; }
-  .btn-primary { @apply btn bg-[#F6C90E] text-black hover:brightness-95; }
-  .btn-dark    { @apply btn bg-zinc-900 text-white hover:bg-zinc-800; }
-  .btn-ghost   { @apply btn bg-transparent border border-white/20 text-white hover:bg-white/10; }
+
+  .btn-primary {
+    @apply btn bg-[#F6C90E] text-black hover:brightness-95;
+    /* Halo jaune */
+    --btn-shadow-rgb: 246, 201, 14; /* #F6C90E */
+  }
+
+  .btn-dark {
+    @apply btn bg-zinc-900 text-white hover:bg-zinc-800;
+    /* Halo noir */
+    --btn-shadow-rgb: 0, 0, 0;
+  }
+
+  .btn-ghost {
+    @apply btn bg-transparent border border-white/20 text-white hover:bg-white/10;
+    /* Halo blanc léger pour fond sombre */
+    --btn-shadow-rgb: 255, 255, 255;
+  }
+
+/* ===== Contour net uniquement au hover ===== */
+.btn-halo {
+  box-shadow: none; /* par défaut, aucun contour */
+  transition: box-shadow 150ms ease;
+}
+
+.btn-halo:hover {
+  box-shadow: 0 0 0 4px rgba(var(--btn-shadow-rgb, 0,0,0), .4);
+}
+
+.btn-halo:active {
+  box-shadow: 0 0 0 3px rgba(var(--btn-shadow-rgb, 0,0,0), .35);
+}
+
+/* Option accessibilité */
+.btn-halo:focus-visible {
+  box-shadow: 0 0 0 4px rgba(var(--btn-shadow-rgb, 0,0,0), .4);
+}
+
+
+
 }

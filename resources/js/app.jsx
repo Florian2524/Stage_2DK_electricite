@@ -5,9 +5,17 @@ import "../css/app.css";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 import Header from "./components/Header";
-import ScrollToTop from "./components/ScrollToTop"; // ⬅️ import ici
+import ScrollToTop from "./components/ScrollToTop";
 import Home from "./components/Home";
 import Contact from "./components/Contact";
+import MentionsLegales from "./components/MentionsLegales";
+import FinalCTA from "./sections/FinalCTA"; // ✅ footer global
+
+// ✅ Pages Services
+import Installation from "./services/Installation";
+import MiseAuxNormes from "./services/MiseAuxNormes";
+import Renovation from "./services/Renovation";
+import Depannage from "./services/Depannage";
 
 function NotFound() {
   return (
@@ -23,15 +31,32 @@ function NotFound() {
 function App() {
   return (
     <BrowserRouter>
-      <ScrollToTop /> {/* ⬅️ Ajouté ici, s’applique à toutes les routes */}
+      <ScrollToTop />
       <Header />
 
       <Routes>
+        {/* Accueil */}
         <Route path="/" element={<Home />} />
+
+        {/* Contact */}
         <Route path="/contact" element={<Contact />} />
         <Route path="/contactez-nous" element={<Contact />} />
+
+        {/* Mentions légales */}
+        <Route path="/mentions-legales" element={<MentionsLegales />} />
+
+        {/* ✅ Services */}
+        <Route path="/services/installation" element={<Installation />} />
+        <Route path="/services/mise-aux-normes" element={<MiseAuxNormes />} />
+        <Route path="/services/renovation" element={<Renovation />} />
+        <Route path="/services/depannage" element={<Depannage />} />
+
+        {/* 404 */}
         <Route path="*" element={<NotFound />} />
       </Routes>
+
+      {/* ✅ footer global présent sur toutes les pages */}
+      <FinalCTA />
     </BrowserRouter>
   );
 }

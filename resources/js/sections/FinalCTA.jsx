@@ -30,12 +30,9 @@ export default function FinalCTA() {
   const handleContact = (e) => {
     e.preventDefault();
     if (location.pathname === CTA_PRIMARY_TO) {
-      // Déjà sur /contact → juste remonter en haut
       scrollTop();
     } else {
-      // Navigation SPA vers /contact, puis remontée en haut
       navigate(CTA_PRIMARY_TO);
-      // Laisse React Router changer de vue puis scroll (tick suivant)
       setTimeout(() => scrollTop(), 0);
     }
   };
@@ -90,35 +87,31 @@ export default function FinalCTA() {
               {LINKS.map((l) => (
                 <li key={l.to}>
                   <Link
-  className="text-zinc-100 hover:text-[#F6C90E] transition-colors"
-  to={l.to}
-  onClick={(e) => {
-    if (l.to === "/contact") {
-      e.preventDefault();
-      if (location.pathname === "/contact") {
-        scrollTop();
-      } else {
-        navigate("/contact");
-        setTimeout(() => scrollTop(), 0);
-      }
-    }
-
-    if (l.to === "/") {
-      e.preventDefault();
-      if (location.pathname === "/") {
-        // Déjà sur la page d'accueil → juste remonter en haut
-        scrollTop();
-      } else {
-        // Sinon naviguer vers la home, puis scroller
-        navigate("/");
-        setTimeout(() => scrollTop(), 0);
-      }
-    }
-  }}
->
-  {l.label}
-</Link>
-
+                    className="text-zinc-100 hover:text-[#F6C90E] transition-colors"
+                    to={l.to}
+                    onClick={(e) => {
+                      if (l.to === "/contact") {
+                        e.preventDefault();
+                        if (location.pathname === "/contact") {
+                          scrollTop();
+                        } else {
+                          navigate("/contact");
+                          setTimeout(() => scrollTop(), 0);
+                        }
+                      }
+                      if (l.to === "/") {
+                        e.preventDefault();
+                        if (location.pathname === "/") {
+                          scrollTop();
+                        } else {
+                          navigate("/");
+                          setTimeout(() => scrollTop(), 0);
+                        }
+                      }
+                    }}
+                  >
+                    {l.label}
+                  </Link>
                 </li>
               ))}
             </ul>
@@ -137,7 +130,7 @@ export default function FinalCTA() {
             <Link
               to={CTA_PRIMARY_TO}
               onClick={handleContact}
-              className="inline-flex items-center justify-center gap-3 px-6 md:px-7 h-12 md:h-14 text-base md:text-lg font-semibold bg-red-600 text-white border border-red-700 hover:bg-red-700 active:translate-y-[1px] transition-all shadow-sm hover:shadow-md w-fit mt-8"
+              className="btn-red btn-halo w-fit mt-8"
             >
               {/* Icône enveloppe */}
               <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="h-5 w-5 md:h-6 md:w-6" fill="currentColor">
@@ -158,9 +151,10 @@ export default function FinalCTA() {
         <button
           type="button"
           onClick={scrollTop}
-          className="pointer-events-auto inline-flex items-center gap-2 rounded-full border border-zinc-400 bg-black/30 backdrop-blur px-4 py-2 text-xs text-white hover:bg-black/50 transition"
+          className="pointer-events-auto inline-flex items-center gap-2 rounded-full border border-zinc-400 bg-black/30 backdrop-blur px-4 py-2 text-xs text-white hover:bg-black/50 transition btn-halo"
           aria-label="Haut de page"
           title="Haut de page"
+          style={{ ['--btn-shadow-rgb']: '255,255,255' }} // contour blanc au hover
         >
           <svg
             className="h-4 w-4"

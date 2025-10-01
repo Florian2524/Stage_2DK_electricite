@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import FinalCTA from "../sections/FinalCTA";
 
 export default function Contact() {
   useEffect(() => {
@@ -70,7 +69,6 @@ export default function Contact() {
     <main className="bg-gradient-to-r from-[#0B0B0B] via-[#161B24] to-[#3E495C] text-zinc-100">
       <section aria-labelledby="contact-title">
         <div className="mx-auto max-w-6xl px-6 md:px-10 xl:px-16 pt-8 md:pt-12 pb-14 md:pb-20">
-
           <div className="grid gap-8 md:gap-10 md:grid-cols-3">
             {/* Colonne gauche */}
             <aside className="md:col-span-1">
@@ -88,18 +86,13 @@ export default function Contact() {
 
               <div className="mt-4 flex flex-wrap gap-3 text-sm">
                 <span className="inline-flex items-center gap-2 border border-[#F6C90E]/30 bg-zinc-900/40 px-3 py-1">
-  <span className="h-1.5 w-1.5 rounded-full bg-[#F6C90E]" />
-  Devis gratuit
-</span>
-<span className="inline-flex items-center gap-2 border border-[#F6C90E]/30 bg-zinc-900/40 px-3 py-1">
-  <span className="h-1.5 w-1.5 rounded-full bg-[#F6C90E]" />
-  Intervention rapide
-</span>
-
-                {/* <span className="inline-flex items-center gap-2 rounded-full border border-[#F6C90E]/30 bg-zinc-900/40 px-3 py-1">
+                  <span className="h-1.5 w-1.5 rounded-full bg-[#F6C90E]" />
+                  Devis gratuit
+                </span>
+                <span className="inline-flex items-center gap-2 border border-[#F6C90E]/30 bg-zinc-900/40 px-3 py-1">
                   <span className="h-1.5 w-1.5 rounded-full bg-[#F6C90E]" />
                   Intervention rapide
-                </span> */}
+                </span>
               </div>
 
               <div className="mt-6 border border-zinc-800 hover:border-[#F6C90E]/40 transition bg-zinc-900/40 p-5">
@@ -126,16 +119,19 @@ export default function Contact() {
                   <li>Métropole de Bordeaux (CUB)</li>
                 </ul>
 
+                {/* Boutons carrés avec contour net au hover */}
                 <div className="mt-5 flex flex-wrap gap-3">
                   <a
                     href="mailto:contact@2dk.fr"
-                    className="inline-flex items-center justify-center px-4 py-2 font-semibold bg-[#F6C90E] text-black hover:bg-[#e9bd07] transition"
+                    className="inline-flex items-center justify-center px-4 py-2 font-semibold bg-[#F6C90E] text-black hover:bg-[#e9bd07] transition btn-halo"
+                    style={{ ["--btn-shadow-rgb"]: "246,201,14" }} // jaune
                   >
                     Écrire un e-mail
                   </a>
                   <a
                     href="tel:0500000000"
-                    className="inline-flex items-center justify-center border border-[#F6C90E]/50 px-4 py-2 text-zinc-200 hover:bg-zinc-800 transition"
+                    className="inline-flex items-center justify-center border border-[#F6C90E]/50 px-4 py-2 text-zinc-200 hover:bg-zinc-800 transition btn-halo"
+                    style={{ ["--btn-shadow-rgb"]: "246,201,14" }} // jaune (couleur d'accent)
                   >
                     Appeler
                   </a>
@@ -168,7 +164,8 @@ export default function Contact() {
                     name="subject"
                     value={form.subject}
                     onChange={handleChange}
-                    className="mt-2 w-full border border-zinc-700 bg-zinc-900 px-3 py-2 text-zinc-100 focus:ring-2 focus:ring-[#F6C90E]"
+                    className="mt-2 w-full border border-zinc-700 bg-zinc-900 px-3 py-2 text-zinc-100 
+                               focus:outline-none focus:ring-2 focus:ring-[#F6C90E]"
                   >
                     <option value="devis">Demande de devis / tarifs</option>
                     <option value="prestations">
@@ -192,7 +189,8 @@ export default function Contact() {
                     rows="5"
                     value={form.message}
                     onChange={handleChange}
-                    className="mt-2 w-full border border-zinc-700 bg-zinc-900 px-3 py-2 text-zinc-100 focus:ring-2 focus:ring-[#F6C90E]"
+                    className="mt-2 w-full border border-zinc-700 bg-zinc-900 px-3 py-2 text-zinc-100 
+                               focus:outline-none focus:ring-2 focus:ring-[#F6C90E]"
                   />
                 </div>
 
@@ -209,7 +207,8 @@ export default function Contact() {
                     name="fullname"
                     value={form.fullname}
                     onChange={handleChange}
-                    className="mt-2 w-full border border-zinc-700 bg-zinc-900 px-3 py-2 text-zinc-100 focus:ring-2 focus:ring-[#F6C90E]"
+                    className="mt-2 w-full border border-zinc-700 bg-zinc-900 px-3 py-2 text-zinc-100 
+                               focus:outline-none focus:ring-2 focus:ring-[#F6C90E]"
                   />
                 </div>
 
@@ -226,7 +225,8 @@ export default function Contact() {
                     name="phone"
                     value={form.phone}
                     onChange={handleChange}
-                    className="mt-2 w-full border border-zinc-700 bg-zinc-900 px-3 py-2 text-zinc-100 focus:ring-2 focus:ring-[#F6C90E]"
+                    className="mt-2 w-full border border-zinc-700 bg-zinc-900 px-3 py-2 text-zinc-100 
+                               focus:outline-none focus:ring-2 focus:ring-[#F6C90E]"
                   />
                 </div>
 
@@ -244,7 +244,8 @@ export default function Contact() {
                     type="email"
                     value={form.email}
                     onChange={handleChange}
-                    className="mt-2 w-full border border-zinc-700 bg-zinc-900 px-3 py-2 text-zinc-100 focus:ring-2 focus:ring-[#F6C90E]"
+                    className="mt-2 w-full border border-zinc-700 bg-zinc-900 px-3 py-2 text-zinc-100 
+                               focus:outline-none focus:ring-2 focus:ring-[#F6C90E]"
                   />
                 </div>
 
@@ -264,12 +265,13 @@ export default function Contact() {
                   </label>
                 </div>
 
-                {/* Bouton */}
+                {/* Bouton d'envoi — carré + contour net au hover */}
                 <div className="flex items-center gap-3">
                   <button
                     type="submit"
                     disabled={submitting}
-                    className="px-6 py-3 font-semibold bg-[#F6C90E] text-black hover:bg-[#e9bd07] transition"
+                    className={`px-6 py-3 font-semibold bg-[#F6C90E] text-black hover:bg-[#e9bd07] transition btn-halo ${submitting ? "opacity-70 cursor-not-allowed" : ""}`}
+                    style={{ ["--btn-shadow-rgb"]: "246,201,14" }} // jaune
                   >
                     {submitting ? "Envoi..." : "Envoyer"}
                   </button>
@@ -279,7 +281,6 @@ export default function Contact() {
           </div>
         </div>
       </section>
-      <FinalCTA />
     </main>
   );
 }
