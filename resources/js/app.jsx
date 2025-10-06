@@ -9,7 +9,7 @@ import ScrollToTop from "./components/ScrollToTop";
 import Home from "./components/Home";
 import Contact from "./components/Contact";
 import MentionsLegales from "./components/MentionsLegales";
-import FinalCTA from "./sections/FinalCTA"; // ✅ footer global
+import Footer from "./components/Footer"; // ✅ footer global
 
 // ✅ Pages Services
 import Installation from "./services/Installation";
@@ -56,7 +56,7 @@ function App() {
       </Routes>
 
       {/* ✅ footer global présent sur toutes les pages */}
-      <FinalCTA />
+      <Footer />
     </BrowserRouter>
   );
 }

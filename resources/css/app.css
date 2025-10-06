@@ -68,6 +68,21 @@
   box-shadow: 0 0 0 4px rgba(var(--btn-shadow-rgb, 0,0,0), .4);
 }
 
-
-
+}
+#contact-form input:not([type="checkbox"]),
+#contact-form textarea,
+#contact-form select {
+  border: 1px solid #3f3f46;   /* gris */
+  border-radius: 0;
+  outline: none;
+  box-shadow: none;
+}
+#contact-form input:not([type="checkbox"]):focus,
+#contact-form textarea:focus,
+#contact-form select:focus {
+  border: 2px solid #F6C90E;   /* jaune au focus */
+  box-shadow: none;
+}
+#contact-form label {
+  border-radius: 0 !important;
 }

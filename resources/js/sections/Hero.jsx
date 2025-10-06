@@ -3,9 +3,9 @@ import { Link } from "react-router-dom";
 
 // Libellés / liens
 const CTA_PRIMARY_LABEL = "Contactez-nous";
-const CTA_PRIMARY_TO = "/contact";      // redirige vers /contact
+const CTA_PRIMARY_TO = "/contact";
 const CTA_SECONDARY_LABEL = "Demande de devis";
-const CTA_SECONDARY_TO = "/contact";    // idem → même page Contact
+const CTA_SECONDARY_TO = "/contact";
 
 export default function Hero() {
   return (

@@ -1,16 +1,41 @@
 import React from "react";
+import { Link } from "react-router-dom";
 
 // Images locales
 import srvInstall from "../../images/services/installation.jpg";
-import srvNormes  from "../../images/services/mise-aux-normes.jpg";
-import srvRenov   from "../../images/services/renovation.jpg";
-import srvDepan   from "../../images/services/depannage.jpg";
+import srvNormes from "../../images/services/mise-aux-normes.jpg";
+import srvRenov from "../../images/services/renovation.jpg";
+import srvDepan from "../../images/services/depannage.jpg";
 
 const SERVICES = [
-  { key: "installation", title: "Installation", image: srvInstall, href: "/services/installation", description: "Tableaux, circuits, prises, éclairage." },
-  { key: "normes",       title: "Mise aux normes", image: srvNormes, href: "/services/mise-aux-normes", description: "Sécurité, conformité, protections différentielles." },
-  { key: "renovation",   title: "Rénovation", image: srvRenov, href: "/services/renovation", description: "Remise à plat des réseaux, optimisation, propreté du chantier." },
-  { key: "depannage",    title: "Dépannage", image: srvDepan, href: "/services/depannage", description: "Intervention rapide — pannes, courts-circuits, disjonctions." },
+  {
+    key: "installation",
+    title: "Installation",
+    image: srvInstall,
+    href: "/services/installation",
+    description: "Tableaux, circuits, prises, éclairage.",
+  },
+  {
+    key: "normes",
+    title: "Mise aux normes",
+    image: srvNormes,
+    href: "/services/mise-aux-normes",
+    description: "Sécurité, conformité, protections différentielles.",
+  },
+  {
+    key: "renovation",
+    title: "Rénovation",
+    image: srvRenov,
+    href: "/services/renovation",
+    description: "Remise à plat des réseaux, optimisation, propreté du chantier.",
+  },
+  {
+    key: "depannage",
+    title: "Dépannage",
+    image: srvDepan,
+    href: "/services/depannage",
+    description: "Intervention rapide — pannes, courts-circuits, disjonctions.",
+  },
 ];
 
 export default function Services() {
@@ -35,9 +60,9 @@ export default function Services() {
         {/* Cartes */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
           {SERVICES.map((item) => (
-            <a
+            <Link
               key={item.key}
-              href={item.href}
+              to={item.href}
               aria-label={`${item.title} — en savoir plus`}
               className="group relative block overflow-hidden shadow-sm ring-1 ring-black/5 bg-white focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F6C90E] transition-shadow hover:shadow-md"
             >
@@ -64,7 +89,7 @@ export default function Services() {
                   </p>
                 </div>
               </div>
-            </a>
+            </Link>
           ))}
         </div>
       </div>
