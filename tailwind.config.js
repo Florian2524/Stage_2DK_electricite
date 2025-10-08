@@ -1,4 +1,6 @@
 // tailwind.config.js
+import typography from '@tailwindcss/typography'
+
 export default {
   content: [
     "./resources/views/**/*.blade.php",
@@ -21,5 +23,7 @@ export default {
       },
     },
   },
-  plugins: [],
-};
+  plugins: [
+    typography, // ← active @tailwindcss/typography (nécessaire pour .prose / .prose-invert)
+  ],
+}

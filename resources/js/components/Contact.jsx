@@ -288,10 +288,9 @@ export default function Contact() {
                   <button
                     type="submit"
                     disabled={submitting}
-                    className={`px-6 py-3 font-semibold bg-[#F6C90E] text-black hover:bg-[#e9bd07] transition btn-halo ${
+                    className={`btn btn-primary btn-square btn-halo ${
                       submitting ? "opacity-70 cursor-not-allowed" : ""
                     }`}
-                    style={{ ["--btn-shadow-rgb"]: "246,201,14" }}
                   >
                     {submitting ? "Envoi..." : "Envoyer"}
                   </button>

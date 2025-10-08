@@ -13,7 +13,6 @@ export default function MentionsLegales() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   }, []);
 
-  // Couleurs du thème (au cas où tu les utilises ailleurs)
   const ACCENT = "#F6C90E";
 
   const sections = [
@@ -52,7 +51,7 @@ export default function MentionsLegales() {
             {/* Sidebar gauche */}
             <aside className="md:col-span-4">
               <div className="sticky top-24 space-y-6">
-                <div className="rounded-2xl bg-[#18181B] border border-zinc-800 p-6">
+                <div className="card-2dk p-6">
                   <h2 className="text-xl font-bold text-white">
                     Mentions légales –<br /> 2DK Électricité
                   </h2>
@@ -66,7 +65,7 @@ export default function MentionsLegales() {
                       to="/contact"
                       className="inline-flex items-center justify-center gap-2 px-5 h-12 text-sm font-semibold
                                  bg-[--accent] text-black border border-yellow-500
-                                 hover:brightness-95 active:translate-y-[1px] transition-all shadow-sm hover:shadow-md rounded-xl"
+                                 hover:brightness-95 active:translate-y-[1px] transition-all shadow-sm hover:shadow-md btn-square"
                       style={{ ["--accent"]: ACCENT }}
                     >
                       {/* icône téléphone/enveloppe minimaliste */}
@@ -85,7 +84,7 @@ export default function MentionsLegales() {
                 </div>
 
                 {/* Sommaire */}
-                <nav className="rounded-2xl bg-[#18181B] border border-zinc-800 p-6">
+                <nav className="card-2dk p-6">
                   <p className="text-sm font-semibold text-zinc-300">Sommaire</p>
                   <ul className="mt-3 space-y-2">
                     {sections.map((s) => (
@@ -111,7 +110,7 @@ export default function MentionsLegales() {
 
             {/* Colonne droite : contenu */}
             <article className="md:col-span-8">
-              <div className="rounded-2xl bg-[#111113] border border-zinc-800 shadow-[0_0_0_1px_rgba(246,201,14,0)]">
+              <div className="card-2dk-content">
                 <div className="p-6 sm:p-8 md:p-10">
                   {/* Section — Confidentialité */}
                   <section id="confidentialite" className="scroll-mt-28">
@@ -121,7 +120,7 @@ export default function MentionsLegales() {
                     >
                       Confidentialité
                     </h2>
-                    <div className="mt-4 prose prose-invert max-w-none">
+                    <div className="mt-4 prose-2dk">
                       <p>
                         2DK Électricité n’enregistre pas d’informations personnelles
                         permettant l’identification, à l’exception des formulaires
@@ -141,7 +140,7 @@ export default function MentionsLegales() {
                     <h2 className="text-2xl md:text-3xl font-extrabold text-white">
                       Règlement général sur la protection des données (RGPD)
                     </h2>
-                    <div className="mt-4 prose prose-invert max-w-none">
+                    <div className="mt-4 prose-2dk">
                       <p>
                         Les informations collectées via nos formulaires (nom, e-mail,
                         téléphone, message, etc.) sont destinées exclusivement à
@@ -181,7 +180,7 @@ export default function MentionsLegales() {
                     <h2 className="text-2xl md:text-3xl font-extrabold text-white">
                       Utilisation de cookies
                     </h2>
-                    <div className="mt-4 prose prose-invert max-w-none">
+                    <div className="mt-4 prose-2dk">
                       <p>
                         Le site peut utiliser des cookies techniques nécessaires
                         au fonctionnement et, le cas échéant, des cookies de
@@ -200,7 +199,7 @@ export default function MentionsLegales() {
                     <h2 className="text-2xl md:text-3xl font-extrabold text-white">
                       Opposition au démarchage
                     </h2>
-                    <div className="mt-4 prose prose-invert max-w-none">
+                    <div className="mt-4 prose-2dk">
                       <p>
                         Conformément à l’article L.223-2 du Code de la
                         consommation, vous pouvez vous inscrire gratuitement sur
@@ -216,7 +215,7 @@ export default function MentionsLegales() {
                     <h2 className="text-2xl md:text-3xl font-extrabold text-white">
                       Liens hypertexte
                     </h2>
-                    <div className="mt-4 prose prose-invert max-w-none">
+                    <div className="mt-4 prose-2dk">
                       <p>
                         Le site peut contenir des liens vers des sites tiers.
                         2DK Électricité ne contrôle pas leur contenu et décline

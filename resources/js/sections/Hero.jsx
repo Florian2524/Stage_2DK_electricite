@@ -34,7 +34,7 @@ export default function Hero() {
           {/* CTA */}
           <div className="mt-10 md:mt-12 flex flex-col sm:flex-row gap-4 sm:gap-5">
             {/* CTA principal */}
-            <Link to={CTA_PRIMARY_TO} className="btn-red btn-halo">
+            <Link to={CTA_PRIMARY_TO} className="btn-red btn-square btn-halo">
               {/* Icône enveloppe */}
               <svg
                 aria-hidden="true"
@@ -49,7 +49,7 @@ export default function Hero() {
             </Link>
 
             {/* CTA secondaire */}
-            <Link to={CTA_SECONDARY_TO} className="btn-red btn-halo">
+            <Link to={CTA_SECONDARY_TO} className="btn-red btn-square btn-halo">
               {CTA_SECONDARY_LABEL}
             </Link>
           </div>

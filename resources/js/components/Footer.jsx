@@ -8,7 +8,6 @@ const LINKS = [
   { label: "Accueil", to: "/" },
   { label: "Contactez-nous", to: "/contact" },
   { label: "Mentions légales", to: "/mentions-legales" },
-  { label: "Plan du site", to: "/plan-du-site" },
 ];
 
 const COMPANY = {
@@ -132,10 +131,15 @@ export default function Footer() {
             <Link
               to={CTA_PRIMARY_TO}
               onClick={handleContact}
-              className="btn-red btn-halo w-fit mt-8"
+              className="btn-red btn-square btn-halo w-fit mt-8"
             >
-              {/* Icône enveloppe */}
-              <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="h-5 w-5 md:h-6 md:w-6" fill="currentColor">
+              <svg
+                aria-hidden="true"
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                className="h-5 w-5 md:h-6 md:w-6"
+                fill="currentColor"
+              >
                 <path d="M2 6.5A2.5 2.5 0 0 1 4.5 4h15A2.5 2.5 0 0 1 22 6.5v11A2.5 2.5 0 0 1 19.5 20h-15A2.5 2.5 0 0 1 2 17.5v-11ZM5 7l7 4.5L19 7H5Z" />
               </svg>
               <span>{CTA_PRIMARY_LABEL}</span>
@@ -156,7 +160,7 @@ export default function Footer() {
           className="pointer-events-auto inline-flex items-center gap-2 rounded-full border border-zinc-400 bg-black/30 backdrop-blur px-4 py-2 text-xs text-white hover:bg-black/50 transition btn-halo"
           aria-label="Haut de page"
           title="Haut de page"
-          style={{ ["--btn-shadow-rgb"]: "255,255,255" }} // contour blanc au hover
+          style={{ ["--btn-shadow-rgb"]: "255,255,255" }}
         >
           <svg
             className="h-4 w-4"

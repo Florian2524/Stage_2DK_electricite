@@ -18,7 +18,12 @@
     /* Couleur de halo pour .btn-halo */
     --btn-shadow-rgb: 220, 38, 38; /* red-600 */
   }
+  /* Coins carrés pour boutons */
+.btn-square { @apply rounded-none; }
 
+  .card-2dk { @apply bg-[#18181B] border border-zinc-800 shadow-sm; }
+  .card-2dk-content { @apply bg-[#111113] border border-zinc-800 shadow-[0_0_0_1px_rgba(246,201,14,0)]; }
+  .prose-2dk { @apply prose prose-invert max-w-none; }
   /* ===== 2DK components ===== */
   /* Conteneur & rythme vertical */
   .container-2dk { @apply mx-auto max-w-6xl px-4; }

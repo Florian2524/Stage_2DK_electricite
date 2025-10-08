@@ -64,7 +64,7 @@ export default function Services() {
               key={item.key}
               to={item.href}
               aria-label={`${item.title} — en savoir plus`}
-              className="group relative block overflow-hidden shadow-sm ring-1 ring-black/5 bg-white focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F6C90E] transition-shadow hover:shadow-md"
+              className="group relative block overflow-hidden rounded-none shadow-sm ring-1 ring-black/5 bg-white focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F6C90E] transition-shadow hover:shadow-md"
             >
               <div className="relative aspect-[16/11] md:aspect-[4/3]">
                 <img
