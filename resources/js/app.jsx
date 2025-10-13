@@ -9,7 +9,13 @@ import ScrollToTop from "./components/ScrollToTop";
 import Home from "./components/Home";
 import Contact from "./components/Contact";
 import MentionsLegales from "./components/MentionsLegales";
-import Footer from "./components/Footer"; // ✅ footer global
+import Footer from "./components/Footer";
+
+// ✅ Admin (nouveaux imports)
+import AuthProvider from "./components/AuthProvider";
+import ProtectedRoute from "./components/ProtectedRoute";
+import AdminLogin from "./pages/AdminLogin";
+import AdminDashboard from "./pages/AdminDashboard";
 
 // ✅ Pages Services
 import Installation from "./services/Installation";
@@ -34,28 +40,41 @@ function App() {
       <ScrollToTop />
       <Header />
 
-      <Routes>
-        {/* Accueil */}
-        <Route path="/" element={<Home />} />
+      {/* ✅ Contexte d'auth tout autour des routes */}
+      <AuthProvider>
+        <Routes>
+          {/* Accueil */}
+          <Route path="/" element={<Home />} />
 
-        {/* Contact */}
-        <Route path="/contact" element={<Contact />} />
-        <Route path="/contactez-nous" element={<Contact />} />
+          {/* Contact */}
+          <Route path="/contact" element={<Contact />} />
+          <Route path="/contactez-nous" element={<Contact />} />
 
-        {/* Mentions légales */}
-        <Route path="/mentions-legales" element={<MentionsLegales />} />
+          {/* Mentions légales */}
+          <Route path="/mentions-legales" element={<MentionsLegales />} />
 
-        {/* ✅ Services */}
-        <Route path="/services/installation" element={<Installation />} />
-        <Route path="/services/mise-aux-normes" element={<MiseAuxNormes />} />
-        <Route path="/services/renovation" element={<Renovation />} />
-        <Route path="/services/depannage" element={<Depannage />} />
+          {/* ✅ Services */}
+          <Route path="/services/installation" element={<Installation />} />
+          <Route path="/services/mise-aux-normes" element={<MiseAuxNormes />} />
+          <Route path="/services/renovation" element={<Renovation />} />
+          <Route path="/services/depannage" element={<Depannage />} />
 
-        {/* 404 */}
-        <Route path="*" element={<NotFound />} />
-      </Routes>
+          {/* ✅ Admin */}
+          <Route path="/admin/login" element={<AdminLogin />} />
+          <Route
+            path="/admin"
+            element={
+              <ProtectedRoute>
+                <AdminDashboard />
+              </ProtectedRoute>
+            }
+          />
 
-      {/* ✅ footer global présent sur toutes les pages */}
+          {/* 404 */}
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </AuthProvider>
+
       <Footer />
     </BrowserRouter>
   );
