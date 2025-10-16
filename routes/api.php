@@ -1,11 +1,12 @@
 <?php
 
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
-// GET /api/ping -> doit répondre { pong: true }
-Route::get('/ping', fn () => response()->json(['pong' => true]));
-
-// GET /api/admin/services -> doit répondre { ok: true } si connecté
-Route::middleware(['auth:sanctum'])->prefix('admin')->group(function () {
-    Route::get('/services', fn () => response()->json(['ok' => true, 'from' => 'routes/api.php']));
+Route::get('/ping', function () {
+    return response()->json(['pong' => true]);
 });
+
+// ⬇️ Ajout ici d'autres routes API purement publiques si besoin, 
+// mais pas les routes Admin protégées par Sanctum. 
+// Les routes Admin restent dans routes/web.php sous middleware.

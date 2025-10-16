@@ -11,17 +11,21 @@ import Contact from "./components/Contact";
 import MentionsLegales from "./components/MentionsLegales";
 import Footer from "./components/Footer";
 
-// ✅ Admin (nouveaux imports)
+// ✅ Admin (imports)
 import AuthProvider from "./components/AuthProvider";
 import ProtectedRoute from "./components/ProtectedRoute";
 import AdminLogin from "./pages/AdminLogin";
 import AdminDashboard from "./pages/AdminDashboard";
+import ServiceForm from "./pages/ServiceForm"; // ⬅️ NEW
 
-// ✅ Pages Services
+// ✅ Pages Services (dédiées, conservées)
 import Installation from "./services/Installation";
 import MiseAuxNormes from "./services/MiseAuxNormes";
 import Renovation from "./services/Renovation";
 import Depannage from "./services/Depannage";
+
+// ⚠️ Supprimé : la page ./pages/Services (on utilise la section sur la Home)
+// import Services from "./pages/Services";
 
 function NotFound() {
   return (
@@ -53,7 +57,8 @@ function App() {
           {/* Mentions légales */}
           <Route path="/mentions-legales" element={<MentionsLegales />} />
 
-          {/* ✅ Services */}
+          {/* ✅ Services (publiques dédiées existantes) */}
+          {/* Pas de route /services : la section est sur la Home */}
           <Route path="/services/installation" element={<Installation />} />
           <Route path="/services/mise-aux-normes" element={<MiseAuxNormes />} />
           <Route path="/services/renovation" element={<Renovation />} />
@@ -66,6 +71,24 @@ function App() {
             element={
               <ProtectedRoute>
                 <AdminDashboard />
+              </ProtectedRoute>
+            }
+          />
+          {/* NEW: création */}
+          <Route
+            path="/admin/services/new"
+            element={
+              <ProtectedRoute>
+                <ServiceForm />
+              </ProtectedRoute>
+            }
+          />
+          {/* NEW: édition */}
+          <Route
+            path="/admin/services/:id/edit"
+            element={
+              <ProtectedRoute>
+                <ServiceForm />
               </ProtectedRoute>
             }
           />
