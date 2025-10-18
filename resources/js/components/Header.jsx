@@ -1,10 +1,10 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Link, NavLink, useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import logoUrl from "../../images/logo_3.png";
 
 import {
   CTA_URL,
-  SERVICES_ITEMS,
+  SERVICES_ITEMS as SERVICES_ITEMS_FALLBACK, // fallback si API vide/KO
   TEL_DISPLAY,
   TEL_LINK,
   EMAIL_DISPLAY,
@@ -18,6 +18,7 @@ import {
   SWITCH_COOLDOWN_MS,
 } from "./header/constants";
 
+import { fetchActiveServices, mapToMenuItems } from "../lib/servicesClient";
 import { IconPhone, IconMenu } from "./header/Icons";
 import { useTheme, useEscapeToClose, copyToClipboard } from "./header/hooks";
 import NavDesktop from "./header/NavDesktop";
@@ -35,12 +36,16 @@ export default function Header() {
   const [query, setQuery] = useState("");
   const [servicesHoverOpen, setServicesHoverOpen] = useState(false);
 
+  // 🔥 Services dynamiques (menu)
+  const [servicesItems, setServicesItems] = useState(null); // null = loading, [] = vide, [{...}] = ok
+  const [servicesError, setServicesError] = useState("");
+
   // Surbrillance Accueil/Services
   const [section, setSection] = useState/** @type {null | 'home' | 'services'} */(null);
   const location = useLocation();
   const navigate = useNavigate();
   const hoverActiveRef = useRef(false);
-  const closeTimer = useRef(null);
+  const closeTimer = useRef(null); // unique
 
   // Utilitaires
   const getHeaderH = () =>
@@ -69,7 +74,7 @@ export default function Header() {
     else setSection(null);
   };
 
-  // Shrink au scroll (identique)
+  // Shrink au scroll
   useEffect(() => {
     const lastSwitchRef = { current: 0 };
     const onScroll = () => {
@@ -140,7 +145,27 @@ export default function Header() {
     };
   }, [location.pathname]);
 
-  // Styles liens nav (identiques)
+  // 🔁 Charger services (API → menu items)
+  useEffect(() => {
+    let cancel = false;
+    async function load() {
+      try {
+        setServicesError("");
+        setServicesItems(null); // loading
+        const list = await fetchActiveServices();
+        if (cancel) return;
+        setServicesItems(mapToMenuItems(list));
+      } catch (e) {
+        if (cancel) return;
+        setServicesError("Impossible de charger la liste des services.");
+        setServicesItems([]); // fallback constants
+      }
+    }
+    load();
+    return () => { cancel = true; };
+  }, []);
+
+  // Styles liens nav
   const navBase =
     "px-2 md:px-3 py-2 text-[15px] md:text-[16px] font-medium tracking-[0.01em] border-b-[1.5px] border-transparent transition-all duration-300";
   const navActive = "text-[#F6C90E] border-b-[1.5px] border-[#F6C90E] pb-1";
@@ -154,7 +179,7 @@ export default function Header() {
   const servicesActive =
     location.pathname === "/" ? section === "services" : servicesRoute;
 
-  // Services hover (identique)
+  // Services hover
   const openServices = () => {
     if (closeTimer.current) clearTimeout(closeTimer.current);
     setServicesHoverOpen(true);
@@ -163,6 +188,12 @@ export default function Header() {
     if (closeTimer.current) clearTimeout(closeTimer.current);
     closeTimer.current = setTimeout(() => setServicesHoverOpen(false), 160);
   };
+
+  // Liste finale pour le menu : API si dispo, sinon fallback constants
+  const SERVICES_ITEMS =
+    servicesItems && servicesItems.length > 0
+      ? servicesItems
+      : SERVICES_ITEMS_FALLBACK;
 
   return (
     <header
@@ -189,7 +220,7 @@ export default function Header() {
               />
             </a>
 
-            {/* Nav Desktop (inclut bouton Infos + CTA + recherche + toggle thème) */}
+            {/* Nav Desktop */}
             <NavDesktop
               cls={cls}
               accueilActive={accueilActive}
@@ -208,9 +239,11 @@ export default function Header() {
               setQuery={setQuery}
               theme={theme}
               toggleTheme={toggleTheme}
+              servicesLoading={servicesItems === null}
+              servicesError={servicesError}
             />
 
-            {/* Actions mobile (identique) */}
+            {/* Actions mobile */}
             <div className="md:hidden flex items-center gap-2 text-neutral-900">
               <a
                 href={TEL_LINK}

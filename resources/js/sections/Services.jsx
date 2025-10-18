@@ -43,7 +43,7 @@ const SERVICES_STATIC = [
 
 // Petit mapping nom → image/route existantes (si possible)
 function pickImageByName(name = "") {
-  const n = name.toLowerCase();
+  const n = (name || "").toLowerCase();
   if (n.includes("norm")) return srvNormes;
   if (n.includes("rénov") || n.includes("renov")) return srvRenov;
   if (n.includes("dép") || n.includes("depan")) return srvDepan;
@@ -51,13 +51,12 @@ function pickImageByName(name = "") {
   return null;
 }
 function pickHrefByName(name = "") {
-  const n = name.toLowerCase();
+  const n = (name || "").toLowerCase();
   if (n.includes("norm")) return "/services/mise-aux-normes";
   if (n.includes("rénov") || n.includes("renov")) return "/services/renovation";
   if (n.includes("dép") || n.includes("depan")) return "/services/depannage";
   if (n.includes("install")) return "/services/installation";
-  // sinon, on redirige vers contact pré-rempli
-  return `/contact?service=${encodeURIComponent(name)}`;
+  return `/contact?service=${encodeURIComponent(name || "Service")}`;
 }
 
 export default function Services() {
@@ -68,7 +67,7 @@ export default function Services() {
     (async () => {
       try {
         setError("");
-        const data = await api.get("/api/services"); // ← endpoint public (services actifs)
+        const data = await api.get("/api/services"); // endpoint public (services actifs)
         setItems(Array.isArray(data) ? data : []);
       } catch {
         setItems([]); // on bascule sur le fallback statique
@@ -86,9 +85,7 @@ export default function Services() {
       aria-labelledby="prestations-title"
       className="bg-gradient-to-b from-white via-zinc-300 to-zinc-500 py-10 md:py-14 lg:py-16"
     >
-      {/* Container harmonisé avec le reste du site */}
       <div className="mx-auto max-w-6xl px-6 md:px-10 xl:px-16">
-        {/* En-tête compact */}
         <div className="mb-5 md:mb-7">
           <h2
             id="prestations-title"
@@ -96,17 +93,11 @@ export default function Services() {
           >
             Nos prestations
           </h2>
-          {/* message d'erreur discret */}
-          {error && (
-            <p className="mt-2 text-sm text-red-600">
-              {error}
-            </p>
-          )}
+          {error && <p className="mt-2 text-sm text-red-600">{error}</p>}
         </div>
 
-        {/* Cartes */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
-          {/* Loading skeleton (même gabarit) */}
+          {/* Loading skeleton */}
           {isLoading &&
             Array.from({ length: 4 }).map((_, i) => (
               <div
@@ -119,15 +110,21 @@ export default function Services() {
           {hasData &&
             items.map((s) => {
               const name = s?.name || "Service";
-              const href = pickHrefByName(name);
+
+              // ✅ Route: priorité au slug → /services/:slug
+              const href = s?.slug ? `/services/${s.slug}` : pickHrefByName(name);
+
               const img = s?.image_url || pickImageByName(name);
               const desc =
                 s?.excerpt ||
-                (s?.description ? String(s.description).slice(0, 120) + (String(s.description).length > 120 ? "…" : "") : "");
+                (s?.description
+                  ? String(s.description).slice(0, 120) +
+                    (String(s.description).length > 120 ? "…" : "")
+                  : "");
 
               return (
                 <Link
-                  key={`svc-${s.id}`}
+                  key={`svc-${s.id || name}`}
                   to={href}
                   aria-label={`${name} — en savoir plus`}
                   className="group relative block overflow-hidden rounded-none shadow-sm ring-1 ring-black/5 bg-white focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F6C90E] transition-shadow hover:shadow-md"
@@ -150,7 +147,6 @@ export default function Services() {
                       aria-hidden="true"
                     />
 
-                    {/* Bloc texte centré */}
                     <div className="absolute inset-x-0 bottom-0 p-5 md:p-6 relative flex flex-col items-center text-center transition-[padding] duration-300 group-hover:pb-12">
                       <h3 className="text-white group-hover:text-[#F6C90E] text-lg md:text-xl font-semibold drop-shadow transition-colors">
                         {name}
@@ -166,8 +162,9 @@ export default function Services() {
               );
             })}
 
-          {/* Fallback : tes 4 cartes statiques si l'API ne renvoie rien */}
-          {!isLoading && !hasData &&
+          {/* Fallback : cartes statiques si l'API ne renvoie rien */}
+          {!isLoading &&
+            !hasData &&
             SERVICES_STATIC.map((item) => (
               <Link
                 key={item.key}

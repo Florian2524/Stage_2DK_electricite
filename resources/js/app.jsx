@@ -11,21 +11,13 @@ import Contact from "./components/Contact";
 import MentionsLegales from "./components/MentionsLegales";
 import Footer from "./components/Footer";
 
-// ✅ Admin (imports)
 import AuthProvider from "./components/AuthProvider";
 import ProtectedRoute from "./components/ProtectedRoute";
 import AdminLogin from "./pages/AdminLogin";
 import AdminDashboard from "./pages/AdminDashboard";
-import ServiceForm from "./pages/ServiceForm"; // ⬅️ NEW
+import ServiceForm from "./pages/ServiceForm";
 
-// ✅ Pages Services (dédiées, conservées)
-import Installation from "./services/Installation";
-import MiseAuxNormes from "./services/MiseAuxNormes";
-import Renovation from "./services/Renovation";
-import Depannage from "./services/Depannage";
-
-// ⚠️ Supprimé : la page ./pages/Services (on utilise la section sur la Home)
-// import Services from "./pages/Services";
+import ServiceDetail from "./services/ServiceDetail";
 
 function NotFound() {
   return (
@@ -44,27 +36,19 @@ function App() {
       <ScrollToTop />
       <Header />
 
-      {/* ✅ Contexte d'auth tout autour des routes */}
       <AuthProvider>
         <Routes>
-          {/* Accueil */}
           <Route path="/" element={<Home />} />
 
-          {/* Contact */}
           <Route path="/contact" element={<Contact />} />
           <Route path="/contactez-nous" element={<Contact />} />
 
-          {/* Mentions légales */}
           <Route path="/mentions-legales" element={<MentionsLegales />} />
 
-          {/* ✅ Services (publiques dédiées existantes) */}
-          {/* Pas de route /services : la section est sur la Home */}
-          <Route path="/services/installation" element={<Installation />} />
-          <Route path="/services/mise-aux-normes" element={<MiseAuxNormes />} />
-          <Route path="/services/renovation" element={<Renovation />} />
-          <Route path="/services/depannage" element={<Depannage />} />
+          {/* Service dynamique */}
+          <Route path="/services/:slug" element={<ServiceDetail />} />
 
-          {/* ✅ Admin */}
+          {/* Admin */}
           <Route path="/admin/login" element={<AdminLogin />} />
           <Route
             path="/admin"
@@ -74,7 +58,6 @@ function App() {
               </ProtectedRoute>
             }
           />
-          {/* NEW: création */}
           <Route
             path="/admin/services/new"
             element={
@@ -83,7 +66,6 @@ function App() {
               </ProtectedRoute>
             }
           />
-          {/* NEW: édition */}
           <Route
             path="/admin/services/:id/edit"
             element={
@@ -93,7 +75,6 @@ function App() {
             }
           />
 
-          {/* 404 */}
           <Route path="*" element={<NotFound />} />
         </Routes>
       </AuthProvider>

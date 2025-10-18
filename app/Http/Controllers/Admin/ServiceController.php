@@ -110,28 +110,33 @@ class ServiceController extends Controller
             ->first(fn ($c) => in_array($c, $columns, true));
 
         if ($titleCol) {
-    $unique = Rule::unique('services', $titleCol);
-    if ($ignoreId) $unique = $unique->ignore($ignoreId);
-    $rules[$titleCol] = [
-        $ignoreId ? 'sometimes' : 'required',
-        'string', 'min:2', 'max:120', $unique
-    ];
-}
+            $unique = Rule::unique('services', $titleCol);
+            if ($ignoreId) $unique = $unique->ignore($ignoreId);
+            $rules[$titleCol] = [
+                $ignoreId ? 'sometimes' : 'required',
+                'string', 'min:2', 'max:120', $unique
+            ];
+        }
 
-        // Règles optionnelles selon colonnes
+        // Règles optionnelles selon colonnes existantes
         if (in_array('slug', $columns, true)) {
             $u = Rule::unique('services', 'slug'); if ($ignoreId) $u = $u->ignore($ignoreId);
             $rules['slug'] = ['nullable', 'string', 'max:140', $u];
         }
-        if (in_array('excerpt', $columns, true))     $rules['excerpt']     = ['nullable', 'string', 'max:500'];
-        if (in_array('description', $columns, true)) $rules['description'] = ['nullable', 'string'];
-        if (in_array('base_price', $columns, true))  $rules['base_price']  = ['nullable', 'numeric', 'min:0']; // 👈 NEW
-        if (in_array('price', $columns, true))       $rules['price']       = ['nullable', 'numeric', 'min:0'];
-        if (in_array('position', $columns, true))    $rules['position']    = ['nullable', 'integer', 'min:0'];
-        if (in_array('duration_minutes', $columns, true)) $rules['duration_minutes'] = ['nullable', 'integer', 'min:0']; // 👈 utile
-        if (in_array('is_active', $columns, true))   $rules['is_active']   = ['sometimes', 'boolean'];
-        if (in_array('image', $columns, true))       $rules['image']       = ['nullable', 'string', 'max:255'];
-        if (in_array('image_url', $columns, true))   $rules['image_url']   = ['nullable', 'url',   'max:1024'];
+        if (in_array('excerpt', $columns, true))          $rules['excerpt']          = ['nullable', 'string', 'max:500'];
+        if (in_array('description', $columns, true))      $rules['description']      = ['nullable', 'string'];
+        if (in_array('base_price', $columns, true))       $rules['base_price']       = ['nullable', 'numeric', 'min:0'];
+        if (in_array('price', $columns, true))            $rules['price']            = ['nullable', 'numeric', 'min:0'];
+        if (in_array('position', $columns, true))         $rules['position']         = ['nullable', 'integer', 'min:0'];
+        if (in_array('duration_minutes', $columns, true)) $rules['duration_minutes'] = ['nullable', 'integer', 'min:0'];
+        if (in_array('is_active', $columns, true))        $rules['is_active']        = ['sometimes', 'boolean'];
+        if (in_array('image', $columns, true))            $rules['image']            = ['nullable', 'string', 'max:255'];
+        if (in_array('image_url', $columns, true))        $rules['image_url']        = ['nullable', 'url',   'max:1024'];
+
+        // 🔥 NOUVEAUX CHAMPS DE CONTENU
+        if (in_array('content_heading', $columns, true))  $rules['content_heading']  = ['nullable', 'string', 'max:180'];
+        if (in_array('content_md', $columns, true))       $rules['content_md']       = ['nullable', 'string']; // Markdown
+        if (in_array('bottom_note', $columns, true))      $rules['bottom_note']      = ['nullable', 'string', 'max:220'];
 
         $data = $request->validate($rules);
 
@@ -154,42 +159,31 @@ class ServiceController extends Controller
      */
     protected function applyDefaults(array $data, array $columns): array
     {
-        // slug auto depuis name/title/label si colonne présente
         if (in_array('slug', $columns, true)) {
             $title = $data['name'] ?? $data['title'] ?? $data['label'] ?? null;
             if (!array_key_exists('slug', $data) && $title) {
                 $data['slug'] = Str::slug($title);
             }
         }
-
-        // position par défaut
         if (in_array('position', $columns, true) && !array_key_exists('position', $data)) {
             $data['position'] = 0;
         }
-
-        // is_active par défaut
         if (in_array('is_active', $columns, true) && !array_key_exists('is_active', $data)) {
             $data['is_active'] = false;
         }
-
-        // durée par défaut (ton erreur initiale)
         if (in_array('duration_minutes', $columns, true) && !array_key_exists('duration_minutes', $data)) {
             $data['duration_minutes'] = 0;
         }
-
-        // prix de base (ta table l'utilise)
         if (in_array('base_price', $columns, true) && !array_key_exists('base_price', $data)) {
             $data['base_price'] = 0;
         }
-
-        // autres champs texte possibles
         if (in_array('excerpt', $columns, true) && !array_key_exists('excerpt', $data)) {
             $data['excerpt'] = '';
         }
         if (in_array('description', $columns, true) && !array_key_exists('description', $data)) {
             $data['description'] = '';
         }
-
+        // Pas de defaults imposés pour content_* et bottom_note
         return $data;
     }
 }

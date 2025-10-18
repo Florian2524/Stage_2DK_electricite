@@ -26,7 +26,12 @@ export default function NavDesktop({
   setQuery,
   theme,
   toggleTheme,
+  // ↓ nouveaux (facultatifs)
+  servicesLoading = false,
+  servicesError = "",
 }) {
+  const hasItems = Array.isArray(SERVICES_ITEMS) && SERVICES_ITEMS.length > 0;
+
   return (
     <>
       {/* Nav desktop */}
@@ -35,7 +40,7 @@ export default function NavDesktop({
         role="navigation"
         aria-label="Navigation principale"
       >
-        {/* Accueil — carré + halo (pas de border jaune, pas de ring noir) */}
+        {/* Accueil — carré + halo */}
         <a
           href="/"
           onClick={handleAccueil}
@@ -44,7 +49,7 @@ export default function NavDesktop({
                       px-4 py-2 font-medium transition
                       rounded-none btn-halo
                       ${accueilActive ? "bg-neutral-200" : ""}`}
-          style={{ ["--btn-shadow-rgb"]: "246,201,14" }} // halo jaune (charte)
+          style={{ ["--btn-shadow-rgb"]: "246,201,14" }}
         >
           Accueil
         </a>
@@ -67,7 +72,7 @@ export default function NavDesktop({
                         ${servicesActive ? "bg-neutral-200" : ""}`}
             aria-haspopup="true"
             aria-expanded={servicesHoverOpen}
-            style={{ ["--btn-shadow-rgb"]: "246,201,14" }} // halo jaune
+            style={{ ["--btn-shadow-rgb"]: "246,201,14" }}
           >
             Services
             <span
@@ -91,7 +96,13 @@ export default function NavDesktop({
             >
               <span className="absolute -top-1 left-1/2 -translate-x-1/2 block w-3 h-3 rotate-45 bg-white border-l border-t border-neutral-200" />
               <ul className="py-2">
-                {SERVICES_ITEMS.map((it) => (
+                {servicesLoading && (
+                  <li className="px-4 py-3 text-[15px] text-neutral-500">
+                    Chargement…
+                  </li>
+                )}
+
+                {!servicesLoading && hasItems && SERVICES_ITEMS.map((it) => (
                   <li key={it.href}>
                     <Link
                       to={it.href}
@@ -104,6 +115,12 @@ export default function NavDesktop({
                     </Link>
                   </li>
                 ))}
+
+                {!servicesLoading && !hasItems && (
+                  <li className="px-4 py-3 text-[15px] text-neutral-500">
+                    {servicesError ? "Indisponible pour le moment" : "Bientôt disponible"}
+                  </li>
+                )}
               </ul>
             </div>
           )}
@@ -120,7 +137,7 @@ export default function NavDesktop({
           aria-expanded={infoOpen}
           aria-controls="infos-utiles-panel"
           title="Voir les informations utiles"
-          style={{ ["--btn-shadow-rgb"]: "246,201,14" }} // halo jaune
+          style={{ ["--btn-shadow-rgb"]: "246,201,14" }}
         >
           <IconAlert className="h-5 w-5" />
           Infos utiles
@@ -134,7 +151,7 @@ export default function NavDesktop({
                      hover:brightness-95
                      rounded-none btn-halo"
           title="Contactez-nous"
-          style={{ ["--btn-shadow-rgb"]: "211,25,32" }} // halo rouge (couleur CTA)
+          style={{ ["--btn-shadow-rgb"]: "211,25,32" }}
         >
           <IconMail className="h-5 w-5" />
           Contactez-nous
