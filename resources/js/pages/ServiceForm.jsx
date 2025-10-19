@@ -17,16 +17,23 @@ export default function ServiceForm() {
     base_price: 0,
     excerpt: "",
     description: "",
-    // 🔥 nouveaux champs
+    // 🔥 nouveaux champs existants
     content_heading: "",
     content_md: "",
     bottom_note: "",
     image_url: "",
+    // ⬇️ champs admin image (ajoutés)
+    image_path: null,
+    image_path_url: null,
   });
 
   const [loading, setLoading] = useState(isEdit);
   const [saving, setSaving] = useState(false);
   const [err, setErr] = useState("");
+
+  // Preview local avant upload
+  const [imageFile, setImageFile] = useState(null);
+  const [imagePreview, setImagePreview] = useState("");
 
   // Précharge CSRF et, si édition, charge la fiche
   useEffect(() => {
@@ -49,6 +56,8 @@ export default function ServiceForm() {
             content_md: data.content_md ?? "",
             bottom_note: data.bottom_note ?? "",
             image_url: data.image_url ?? "",
+            image_path: data.image_path ?? null,
+            image_path_url: data.image_path_url ?? null,
           }));
         }
       } catch {
@@ -93,13 +102,15 @@ export default function ServiceForm() {
         content_heading: form.content_heading || null,
         content_md: form.content_md || null,
         bottom_note: form.bottom_note || null,
-        image_url: form.image_url || null,
+        image_url: form.image_url || null, // compat URL distante
       };
 
       if (isEdit) {
         await api.put(`/api/admin/services/${id}`, payload);
       } else {
-        await api.post("/api/admin/services", payload);
+        const created = await api.post("/api/admin/services", payload);
+        // Si tu veux rester sur l'écran d’édition du nouveau service :
+        // navigate(`/admin/services/${created.id}/edit`, { replace: true });
       }
 
       navigate("/admin", {
@@ -116,6 +127,65 @@ export default function ServiceForm() {
       setSaving(false);
     }
   }
+
+  // —— Upload image locale (admin uniquement) ——
+  function onFileSelect(e) {
+    const file = e.target.files?.[0];
+    setImageFile(file || null);
+    setImagePreview(file ? URL.createObjectURL(file) : "");
+  }
+
+  async function uploadImage() {
+    if (!isEdit) {
+      setErr("Enregistre d’abord le service pour obtenir un ID, puis uploade l’image.");
+      return;
+    }
+    if (!imageFile) {
+      setErr("Aucun fichier sélectionné.");
+      return;
+    }
+    setErr("");
+    try {
+      await api.ensureCsrf();
+      const fd = new FormData();
+      fd.append("file", imageFile);
+      const res = await api.post(`/api/admin/services/${id}/image`, fd, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+      // MAJ du formulaire avec l’URL publique
+      setForm((f) => ({
+        ...f,
+        image_path: res.image_path ?? null,
+        image_path_url: res.image_url ?? null,
+      }));
+      // Reset preview local (on garde l’aperçu serveur)
+      setImageFile(null);
+      setImagePreview("");
+    } catch (e2) {
+      const msg =
+        e2?.data?.message ||
+        e2?.data?.errors?.file?.[0] ||
+        "Échec de l’upload (format ou taille ?)";
+      setErr(msg);
+    }
+  }
+
+  async function deleteImage() {
+    if (!isEdit) return;
+    setErr("");
+    try {
+      await api.ensureCsrf();
+      await api.del(`/api/admin/services/${id}/image`);
+      setForm((f) => ({ ...f, image_path: null, image_path_url: null }));
+      setImageFile(null);
+      setImagePreview("");
+    } catch {
+      setErr("Impossible de supprimer l’image.");
+    }
+  }
+
+  const resolvedImageForPreview =
+    imagePreview || form.image_path_url || form.image_url || "";
 
   if (loading) {
     return (
@@ -285,7 +355,7 @@ export default function ServiceForm() {
 
               <div>
                 <label htmlFor="image_url" className="block text-sm text-zinc-300 mb-1">
-                  Image (URL) — provisoire
+                  Image (URL) — optionnel
                 </label>
                 <input
                   id="image_url" name="image_url" type="url"
@@ -294,10 +364,57 @@ export default function ServiceForm() {
                   placeholder="https://…"
                 />
                 <p className="text-xs text-zinc-500 mt-1">
-                  On branchera l’upload local juste après.
+                  Si aucune image locale n’est uploadée, on utilisera cette URL (sinon priorité à l’image locale).
                 </p>
               </div>
             </div>
+          </div>
+
+          {/* 🖼️ Bloc image (upload local + preview + suppression) */}
+          <div className="space-y-4 border-t border-zinc-800 pt-6">
+            <h2 className="text-lg font-semibold text-zinc-200">Image du service (upload local)</h2>
+
+            {/* Aperçu (priorité: preview local > image_path_url > image_url) */}
+            {resolvedImageForPreview ? (
+              <div className="w-full max-w-md">
+                <img
+                  src={resolvedImageForPreview}
+                  alt={form.name || "Aperçu"}
+                  className="w-full h-auto object-cover ring-1 ring-black/30"
+                />
+              </div>
+            ) : (
+              <p className="text-zinc-500 text-sm">Aucune image pour le moment.</p>
+            )}
+
+            <div className="flex flex-col md:flex-row items-start md:items-center gap-3">
+              <input
+                type="file"
+                accept="image/png,image/jpeg,image/webp"
+                onChange={onFileSelect}
+                className="text-sm file:mr-3 file:px-4 file:py-2 file:border file:border-zinc-600 file:bg-zinc-900 file:text-zinc-200 file:hover:bg-zinc-800"
+              />
+              <button
+                type="button"
+                onClick={uploadImage}
+                disabled={!imageFile || !isEdit}
+                className="btn-square inline-flex items-center justify-center px-4 h-10 font-semibold bg-[#F6C90E] text-black border border-[#F6C90E] hover:bg-black hover:text-[#F6C90E] transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
+              >
+                {isEdit ? "Uploader l’image" : "Enregistrer d’abord"}
+              </button>
+              {form.image_path_url && (
+                <button
+                  type="button"
+                  onClick={deleteImage}
+                  className="btn-square inline-flex items-center justify-center px-4 h-10 font-semibold border border-zinc-600 hover:bg-zinc-900 transition-colors"
+                >
+                  Supprimer l’image
+                </button>
+              )}
+            </div>
+            <p className="text-xs text-zinc-500">
+              Formats autorisés: JPG, JPEG, PNG, WEBP. Taille max 2&nbsp;Mo.
+            </p>
           </div>
         </form>
       </section>

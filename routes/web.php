@@ -2,12 +2,15 @@
 
 use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
+
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\Admin\ServiceController as AdminServiceController;
+use App\Http\Controllers\Admin\ServiceImageController;
 
 use App\Models\Service;
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Support\Str;
 
 /*
 |--------------------------------------------------------------------------
@@ -34,23 +37,35 @@ Route::prefix('api')->group(function () {
         if (in_array('is_active', $cols, true)) {
             $q->where('is_active', true);
         }
-        if ($orderBy) $q->orderBy($orderBy, 'asc');
+        if ($orderBy) {
+            $q->orderBy($orderBy, 'asc');
+        }
 
         $services = $q->get()->map(function ($s) use ($cols) {
             $name = $s->name ?? $s->title ?? $s->label ?? null;
             $slug = $s->slug ?? ($name ? Str::slug($name) : null);
 
+            // ✅ Résolution d’URL publique si image_path (storage:link requis)
+            $imagePathUrl = in_array('image_path', $cols, true) && $s->image_path
+                ? Storage::url($s->image_path)
+                : null;
+
             return [
-                'id' => $s->id,
-                'name' => $name,
-                'slug' => $slug,
-                'excerpt' => in_array('excerpt', $cols, true) ? ($s->excerpt ?? '') : '',
-                'description' => in_array('description', $cols, true) ? ($s->description ?? '') : '',
-                'base_price' => in_array('base_price', $cols, true)
+                'id'               => $s->id,
+                'name'             => $name,
+                'slug'             => $slug,
+                'excerpt'          => in_array('excerpt', $cols, true) ? ($s->excerpt ?? '') : '',
+                'description'      => in_array('description', $cols, true) ? ($s->description ?? '') : '',
+                'base_price'       => in_array('base_price', $cols, true)
                     ? ($s->base_price ?? 0)
                     : (in_array('price', $cols, true) ? ($s->price ?? 0) : 0),
                 'duration_minutes' => in_array('duration_minutes', $cols, true) ? ($s->duration_minutes ?? 0) : 0,
-                'image_url' => in_array('image_url', $cols, true) ? ($s->image_url ?? null) : null,
+
+                // ✅ image_url = priorité à l’URL publique de image_path, sinon image_url distante
+                'image_url'        => $imagePathUrl ?: (in_array('image_url', $cols, true) ? ($s->image_url ?? null) : null),
+
+                // (optionnel mais pratique côté front)
+                'image_path_url'   => $imagePathUrl,
             ];
         });
 
@@ -62,7 +77,7 @@ Route::prefix('api')->group(function () {
         $cols   = Schema::getColumnListing('services');
         $target = Str::slug($slug);
 
-        // Récupération des services (actifs par défaut, prévisualisation possible)
+        // Récupération (actifs par défaut, prévisualisation possible)
         $services = Service::query()
             ->when(in_array('is_active', $cols, true) && !$request->boolean('include_inactive'),
                 fn ($q) => $q->where('is_active', true))
@@ -86,7 +101,7 @@ Route::prefix('api')->group(function () {
         });
 
         if (!$found) {
-            abort(404);
+            return response()->json(['message' => 'Service not found'], 404);
         }
 
         $s       = $found;
@@ -95,15 +110,28 @@ Route::prefix('api')->group(function () {
             ? $s->slug
             : ($name ? Str::slug($name) : null);
 
+        // ✅ Résolution d’URL publique si image_path
+        $imagePathUrl = in_array('image_path', $cols, true) && $s->image_path
+            ? Storage::url($s->image_path)
+            : null;
+
         return response()->json([
             'id'              => $s->id,
             'name'            => $name,
             'slug'            => $slugOut,
             'excerpt'         => in_array('excerpt', $cols, true) ? ($s->excerpt ?? '') : '',
+            'description'     => in_array('description', $cols, true) ? ($s->description ?? '') : '',
+            'duration_minutes'=> in_array('duration_minutes', $cols, true) ? ($s->duration_minutes ?? 0) : 0,
+            'base_price'      => in_array('base_price', $cols, true) ? ($s->base_price ?? 0) : 0,
+
+            // Contenu riche
             'content_heading' => in_array('content_heading', $cols, true) ? ($s->content_heading ?? null) : null,
             'content_md'      => in_array('content_md', $cols, true) ? ($s->content_md ?? null) : null,
             'bottom_note'     => in_array('bottom_note', $cols, true) ? ($s->bottom_note ?? null) : null,
-            'image_url'       => in_array('image_url', $cols, true) ? ($s->image_url ?? null) : null,
+
+            // Images
+            'image_url'       => $imagePathUrl ?: (in_array('image_url', $cols, true) ? ($s->image_url ?? null) : null),
+            'image_path_url'  => $imagePathUrl,
         ]);
     })->name('api.services.show');
 });
@@ -117,12 +145,18 @@ Route::middleware('auth:sanctum')
     ->prefix('api/admin')
     ->as('admin.')
     ->group(function () {
-        Route::get('/services', [AdminServiceController::class, 'index'])->name('services.index');
+        // CRUD Services
+        Route::get   ('/services',           [AdminServiceController::class, 'index'])->name('services.index');
         Route::get   ('/services/{service}', [AdminServiceController::class, 'show'])->name('services.show');
         Route::post  ('/services',           [AdminServiceController::class, 'store'])->name('services.store');
         Route::put   ('/services/{service}', [AdminServiceController::class, 'update'])->name('services.update');
         Route::delete('/services/{service}', [AdminServiceController::class, 'destroy'])->name('services.destroy');
 
+        // ✅ Upload / suppression d'image (protégées)
+        Route::post  ('/services/{service}/image', [ServiceImageController::class, 'store'])->name('services.image.store');
+        Route::delete('/services/{service}/image', [ServiceImageController::class, 'destroy'])->name('services.image.destroy');
+
+        // Profil Admin connecté
         Route::get('/me', function (Request $request) {
             return response()->json($request->user());
         })->name('me');

@@ -1,3 +1,4 @@
+// resources/js/services/ServiceDetail.jsx
 import React, { useEffect, useMemo, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import api from "../lib/api";
@@ -7,7 +8,6 @@ import srvNormes from "../../images/services/mise-aux-normes.jpg";
 import srvRenov from "../../images/services/renovation.jpg";
 import srvDepan from "../../images/services/depannage.jpg";
 
-// --- Helpers images: on essaie par mots-clés sur slug ET name ---
 function pickImageByKey(s = "") {
   const n = String(s || "").toLowerCase();
   if (n.includes("norm")) return srvNormes;
@@ -17,18 +17,16 @@ function pickImageByKey(s = "") {
   return null;
 }
 
-// --- Mini “parser Markdown” sécurisé: **gras** et listes (-) ---
+// Mini parser Markdown (identique à ta version)
 function escapeHtml(str) {
   return String(str).replace(/[&<>"']/g, (c) => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c]));
 }
 function mdToHtml(md = "") {
   if (!md) return "";
   const lines = md.replace(/\r\n?/g, "\n").split("\n");
-
   const out = [];
   let inList = false;
   const pbuf = [];
-
   const flushP = () => {
     if (!pbuf.length) return;
     const text = pbuf.join(" ").trim();
@@ -37,7 +35,6 @@ function mdToHtml(md = "") {
     out.push(`<p class="mb-4 leading-relaxed">${html}</p>`);
     pbuf.length = 0;
   };
-
   for (const raw of lines) {
     const line = raw.trimEnd();
     const m = line.match(/^\s*-\s+(.*)$/);
@@ -85,9 +82,11 @@ export default function ServiceDetail() {
 
   const imgSrc = useMemo(() => {
     if (!data) return null;
-    // 1) image_url back-office
+    // 1) URL résolue par l’API publique (image_path -> /storage/..)
+    if (data.image_path_url) return data.image_path_url;
+    // 2) URL distante (si fournie)
     if (data.image_url) return data.image_url;
-    // 2) image locale par slug ou nom (mots-clés)
+    // 3) Fallback local par mots-clés
     return pickImageByKey(data.slug) || pickImageByKey(data.name) || null;
   }, [data]);
 
@@ -129,18 +128,15 @@ export default function ServiceDetail() {
   return (
     <main className="bg-[#0B0B0B] text-zinc-200">
       <section className="max-w-6xl mx-auto px-6 md:px-10 xl:px-16 py-8 md:py-10">
-        {/* Titre de page */}
         <h1 className="text-[40px] md:text-[48px] font-extrabold text-[#F6C90E] leading-tight">
           {data.name} à Bordeaux Métropole (CUB)
         </h1>
 
-        {/* Sous-titre (excerpt) */}
         {!!data.excerpt && (
           <p className="mt-2 text-lg text-zinc-300">{data.excerpt}</p>
         )}
 
         <div className="mt-8 grid md:grid-cols-12 gap-6">
-          {/* Image */}
           <div className="md:col-span-7">
             <div className="bg-black ring-1 ring-black/30">
               {imgSrc ? (
@@ -151,7 +147,6 @@ export default function ServiceDetail() {
             </div>
           </div>
 
-          {/* Colonne droite */}
           <div className="md:col-span-5">
             {!!heading && (
               <h2 className="text-3xl md:text-4xl font-extrabold text-[#F6C90E] leading-tight">
@@ -175,7 +170,6 @@ export default function ServiceDetail() {
           </div>
         </div>
 
-        {/* Bandeau note bas de page */}
         {!!data.bottom_note && (
           <div className="mt-8 flex items-start gap-3">
             <span className="mt-1 inline-block h-6 w-1.5 bg-[#F6C90E]" />

@@ -1,12 +1,12 @@
 <?php
 
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Api\ServicePublicController;
 
-Route::get('/ping', function () {
-    return response()->json(['pong' => true]);
-});
+Route::get('/ping', fn () => response()->json(['pong' => true]));
 
-// ⬇️ Ajout ici d'autres routes API purement publiques si besoin, 
-// mais pas les routes Admin protégées par Sanctum. 
-// Les routes Admin restent dans routes/web.php sous middleware.
+// ✅ API publique Services (consommée par ton front React)
+Route::get('/services',        [ServicePublicController::class, 'index']);
+Route::get('/services/{slug}', [ServicePublicController::class, 'show']);
+
+// ⚠️ Ne pas déclarer ici les routes Admin protégées par Sanctum (restent dans routes/web.php)
