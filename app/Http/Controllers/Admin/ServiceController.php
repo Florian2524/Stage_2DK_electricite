@@ -118,29 +118,25 @@ class ServiceController extends Controller
             ];
         }
 
-        // Règles optionnelles selon colonnes existantes
+        // Règles selon colonnes existantes
         if (in_array('slug', $columns, true)) {
-            $u = Rule::unique('services', 'slug'); if ($ignoreId) $u = $u->ignore($ignoreId);
+            $u = Rule::unique('services', 'slug');
+            if ($ignoreId) $u = $u->ignore($ignoreId);
             $rules['slug'] = ['nullable', 'string', 'max:140', $u];
         }
-        if (in_array('excerpt', $columns, true))          $rules['excerpt']          = ['nullable', 'string', 'max:500'];
-        if (in_array('description', $columns, true))      $rules['description']      = ['nullable', 'string'];
-        if (in_array('base_price', $columns, true))       $rules['base_price']       = ['nullable', 'numeric', 'min:0'];
-        if (in_array('price', $columns, true))            $rules['price']            = ['nullable', 'numeric', 'min:0'];
-        if (in_array('position', $columns, true))         $rules['position']         = ['nullable', 'integer', 'min:0'];
-        if (in_array('duration_minutes', $columns, true)) $rules['duration_minutes'] = ['nullable', 'integer', 'min:0'];
-        if (in_array('is_active', $columns, true))        $rules['is_active']        = ['sometimes', 'boolean'];
-        if (in_array('image', $columns, true))            $rules['image']            = ['nullable', 'string', 'max:255'];
-        if (in_array('image_url', $columns, true))        $rules['image_url']        = ['nullable', 'url',   'max:1024'];
+        if (in_array('description', $columns, true))  $rules['description'] = ['nullable', 'string'];
+        if (in_array('position', $columns, true))     $rules['position']     = ['nullable', 'integer', 'min:0'];
+        if (in_array('is_active', $columns, true))    $rules['is_active']    = ['sometimes', 'boolean'];
+        if (in_array('image', $columns, true))        $rules['image']        = ['nullable', 'string', 'max:255'];
+        if (in_array('image_url', $columns, true))    $rules['image_url']    = ['nullable', 'url', 'max:1024'];
 
-        // 🔥 NOUVEAUX CHAMPS DE CONTENU
-        if (in_array('content_heading', $columns, true))  $rules['content_heading']  = ['nullable', 'string', 'max:180'];
-        if (in_array('content_md', $columns, true))       $rules['content_md']       = ['nullable', 'string']; // Markdown
-        if (in_array('bottom_note', $columns, true))      $rules['bottom_note']      = ['nullable', 'string', 'max:220'];
+        // Champs de contenu
+        if (in_array('content_heading', $columns, true)) $rules['content_heading'] = ['nullable', 'string', 'max:180'];
+        if (in_array('content_md', $columns, true))      $rules['content_md']      = ['nullable', 'string'];
+        if (in_array('bottom_note', $columns, true))     $rules['bottom_note']     = ['nullable', 'string', 'max:220'];
 
         $data = $request->validate($rules);
 
-        // Champs assignables (évite timestamps)
         $fillable = array_values(array_diff($columns, ['created_at', 'updated_at', 'deleted_at']));
 
         return [$data, $fillable];
@@ -155,7 +151,7 @@ class ServiceController extends Controller
     }
 
     /**
-     * Applique des valeurs par défaut (slug/position/is_active/base_price/duration...) si absentes.
+     * Applique des valeurs par défaut (slug, position, is_active, description).
      */
     protected function applyDefaults(array $data, array $columns): array
     {
@@ -171,19 +167,10 @@ class ServiceController extends Controller
         if (in_array('is_active', $columns, true) && !array_key_exists('is_active', $data)) {
             $data['is_active'] = false;
         }
-        if (in_array('duration_minutes', $columns, true) && !array_key_exists('duration_minutes', $data)) {
-            $data['duration_minutes'] = 0;
-        }
-        if (in_array('base_price', $columns, true) && !array_key_exists('base_price', $data)) {
-            $data['base_price'] = 0;
-        }
-        if (in_array('excerpt', $columns, true) && !array_key_exists('excerpt', $data)) {
-            $data['excerpt'] = '';
-        }
         if (in_array('description', $columns, true) && !array_key_exists('description', $data)) {
             $data['description'] = '';
         }
-        // Pas de defaults imposés pour content_* et bottom_note
+
         return $data;
     }
 }

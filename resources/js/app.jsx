@@ -19,6 +19,9 @@ import ServiceForm from "./pages/ServiceForm";
 
 import ServiceDetail from "./services/ServiceDetail";
 
+// ⬇️ AJOUT
+import AdminMessages from "./pages/AdminMessages";
+
 function NotFound() {
   return (
     <main className="min-h-[50vh] flex items-center justify-center text-center">
@@ -71,6 +74,16 @@ function App() {
             element={
               <ProtectedRoute>
                 <ServiceForm />
+              </ProtectedRoute>
+            }
+          />
+
+          {/* ⬇️ AJOUT : page des messages admin */}
+          <Route
+            path="/admin/messages"
+            element={
+              <ProtectedRoute>
+                <AdminMessages />
               </ProtectedRoute>
             }
           />

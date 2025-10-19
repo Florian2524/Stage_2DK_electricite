@@ -3,14 +3,15 @@ import ContactAside from "./ContactAside";
 import Panel from "./ui/Panel";
 import Field from "./form/Field";
 import { validateContact } from "../utils/validateContact";
-import { SERVICES_ITEMS } from "./header/constants"; // ⬅️ source unique
+import { SERVICES_ITEMS } from "./header/constants";
+import api from "../lib/api";
 
 // Génère les options "travaux" depuis le menu Services
 const SERVICE_OPTIONS = (SERVICES_ITEMS || [])
   .filter((s) => !!s?.label && !!s?.href)
   .map((s) => ({
-    value: (s.slug ?? s.href.split("/").filter(Boolean).pop()), // ex: "installation"
-    label: s.label,                                             // "Installation"
+    value: (s.slug ?? s.href.split("/").filter(Boolean).pop()),
+    label: s.label,
   }));
 
 export default function Contact() {
@@ -18,17 +19,14 @@ export default function Contact() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   }, []);
 
-  // État formulaire (on garde ton rendu/UX)
   const [form, setForm] = useState({
-    subject: "devis",   // "devis" | "prestations" | "autre"
+    subject: "devis",
     message: "",
     fullname: "",
     phone: "",
     email: "",
     rgpd: false,
-
-    // Champs spécifiques "devis"
-    ownership: "",       // "proprietaire" | "locataire"
+    ownership: "",
     site_address: "",
     works: [],
   });
@@ -39,7 +37,6 @@ export default function Contact() {
 
   const isDevis = form.subject === "devis";
 
-  // Toggle multi-choix "works"
   const toggleWork = (value) => {
     setForm((prev) => {
       const exists = prev.works.includes(value);
@@ -50,25 +47,12 @@ export default function Contact() {
     setStatus(null);
   };
 
-  // Changement de champ
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
 
-    // Si on sort du mode "devis", nettoyer les champs liés
     if (name === "subject" && value !== "devis") {
-      setForm((p) => ({
-        ...p,
-        subject: value,
-        ownership: "",
-        site_address: "",
-        works: [],
-      }));
-      setErrors((p) => ({
-        ...p,
-        ownership: undefined,
-        site_address: undefined,
-        works: undefined,
-      }));
+      setForm((p) => ({ ...p, subject: value, ownership: "", site_address: "", works: [] }));
+      setErrors((p) => ({ ...p, ownership: undefined, site_address: undefined, works: undefined }));
       setStatus(null);
       return;
     }
@@ -78,20 +62,15 @@ export default function Contact() {
     setStatus(null);
   };
 
-  // Soumission
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // 1) Validation globale existante
     const v = validateContact(form);
-
-    // 2) Règles devis conditionnelles
     if (isDevis) {
       if (!form.ownership) v.ownership = "Choisissez propriétaire ou locataire.";
       if (!form.site_address.trim()) v.site_address = "Adresse du bien obligatoire.";
       if (!form.works.length) v.works = "Sélectionnez au moins un type de travaux.";
     }
-
     if (Object.keys(v).length) {
       setErrors(v);
       setStatus("error");
@@ -99,25 +78,55 @@ export default function Contact() {
     }
 
     setSubmitting(true);
+    setStatus(null);
 
-    // Payload prêt pour l’API
+    // Concat lisible pour le champ message (email + base)
+    const lines = [];
+    const subjectLabel =
+      form.subject === "devis" ? "Demande de devis / tarifs"
+      : form.subject === "prestations" ? "Questions sur nos prestations"
+      : "Autre";
+
+    if (form.message.trim()) lines.push(form.message.trim());
+
+    const contactInfos = [];
+    if (form.fullname.trim()) contactInfos.push(`Nom: ${form.fullname.trim()}`);
+    if (form.phone.trim())    contactInfos.push(`Téléphone: ${form.phone.trim()}`);
+    if (contactInfos.length)  lines.push("", contactInfos.join(" | "));
+
+    if (form.rgpd) lines.push("RGPD: consentement donné pour le traitement de la demande.");
+
+    if (isDevis) {
+      const devisLines = [];
+      if (form.ownership) devisLines.push(`Statut d’occupation: ${form.ownership === "proprietaire" ? "Propriétaire" : "Locataire"}`);
+      if (form.site_address.trim()) devisLines.push(`Adresse du bien: ${form.site_address.trim()}`);
+      if (form.works.length) {
+        const labelByValue = Object.fromEntries(SERVICE_OPTIONS.map(o => [o.value, o.label]));
+        const worksLabels = form.works.map(w => labelByValue[w] || w);
+        devisLines.push(`Travaux demandés: ${worksLabels.join(", ")}`);
+      }
+      if (devisLines.length) lines.push("", "— Informations pour devis —", ...devisLines);
+    }
+
+    // ✅ Payload V2 : structuré + message lisible
     const payload = {
-      subject: form.subject,
-      message: form.message.trim(),
-      fullname: form.fullname.trim(),
-      phone: form.phone.trim(),
+      name: form.fullname.trim() || "Visiteur",
       email: form.email.trim(),
-      rgpd: !!form.rgpd,
-      ...(isDevis && {
-        ownership: form.ownership,
-        site_address: form.site_address.trim(),
-        works: form.works,
-      }),
-    };
-    console.log("[CONTACT] payload:", payload);
+      subject: subjectLabel,
+      message: lines.join("\n"),
 
-    // Simu d’envoi
-    setTimeout(() => {
+      // Champs structurés
+      phone: form.phone.trim() || null,
+      ownership: isDevis ? form.ownership || null : null,
+      site_address: isDevis ? form.site_address.trim() || null : null,
+      works: isDevis ? form.works : [],
+      rgpd: !!form.rgpd,
+    };
+
+    try {
+      await api.ensureCsrf();
+      await api.post("/api/contact", payload);
+
       setSubmitting(false);
       setStatus("success");
       setForm({
@@ -132,7 +141,29 @@ export default function Contact() {
         works: [],
       });
       setErrors({});
-    }, 700);
+    } catch (err) {
+      console.error("[CONTACT] error:", err);
+      setSubmitting(false);
+      const msg =
+        err?.data?.message ||
+        (typeof err?.data === "string" ? err.data : null) ||
+        "Échec de l’envoi. Réessayez dans un instant.";
+      setStatus("error");
+      if (err?.data?.errors && typeof err.data.errors === "object") {
+        const out = {};
+        if (err.data.errors.name) out.fullname = err.data.errors.name[0];
+        if (err.data.errors.email) out.email = err.data.errors.email[0];
+        if (err.data.errors.subject) out.subject = err.data.errors.subject[0];
+        if (err.data.errors.message) out.message = err.data.errors.message[0];
+        // champs structurés
+        if (err.data.errors.phone) out.phone = err.data.errors.phone[0];
+        if (err.data.errors.ownership) out.ownership = err.data.errors.ownership[0];
+        if (err.data.errors.site_address) out.site_address = err.data.errors.site_address[0];
+        setErrors(out);
+      } else {
+        setErrors((p) => ({ ...p, _global: msg }));
+      }
+    }
   };
 
   return (
@@ -140,21 +171,11 @@ export default function Contact() {
       <section aria-labelledby="contact-title">
         <div className="mx-auto max-w-6xl px-6 md:px-10 xl:px-16 pt-8 md:pt-12 pb-14 md:pb-20">
           <div className="grid gap-8 md:gap-10 md:grid-cols-3">
-            {/* Colonne gauche */}
             <ContactAside />
-
             <hr className="md:hidden my-4 border-t border-[#F6C90E]/20" />
-
-            {/* Colonne droite : formulaire */}
             <div className="md:col-span-2">
-              <Panel
-                as="form"
-                id="contact-form" // ⬅️ pour cibler le style des champs
-                onSubmit={handleSubmit}
-                noValidate
-                className="p-6 md:p-7 shadow-[0_10px_40px_-10px_rgba(0,0,0,0.6)]"
-              >
-                {/* Demande */}
+              <Panel as="form" id="contact-form" onSubmit={handleSubmit} noValidate
+                     className="p-6 md:p-7 shadow-[0_10px_40px_-10px_rgba(0,0,0,0.6)]">
                 <Field
                   as="select"
                   id="subject"
@@ -171,15 +192,8 @@ export default function Contact() {
                   ]}
                 />
 
-                {/* Bloc devis conditionnel (même rendu, animation collapse) */}
-                <div
-                  className={`transition-all duration-300 overflow-hidden ${
-                    isDevis ? "max-h-[1200px] opacity-100" : "max-h-0 opacity-0"
-                  }`}
-                  aria-hidden={!isDevis}
-                >
+                <div className={`transition-all duration-300 overflow-hidden ${isDevis ? "max-h-[1200px] opacity-100" : "max-h-0 opacity-0"}`} aria-hidden={!isDevis}>
                   <div className="mt-4 space-y-6">
-                    {/* Statut d’occupation (menu) */}
                     <Field
                       as="select"
                       id="ownership"
@@ -194,8 +208,6 @@ export default function Contact() {
                         { value: "locataire", label: "Locataire" },
                       ]}
                     />
-
-                    {/* Adresse du bien concerné */}
                     <Field
                       id="site_address"
                       name="site_address"
@@ -204,104 +216,46 @@ export default function Contact() {
                       onChange={handleChange}
                       error={errors.site_address}
                     />
-
-                    {/* Quels travaux ? (cases, rendu identique, coins droits) */}
                     <div>
                       <div className="text-sm font-medium text-zinc-200">Quels travaux ?</div>
                       <div className="mt-2 grid grid-cols-1 sm:grid-cols-2 gap-2">
                         {SERVICE_OPTIONS.map((opt) => (
-                          <label
-                            key={opt.value}
-                            className="inline-flex items-center gap-2 bg-[#0F1115] rounded-none px-3 py-2 border border-zinc-700/70"
-                          >
-                            <input
-                              type="checkbox"
-                              checked={form.works.includes(opt.value)}
-                              onChange={() => toggleWork(opt.value)}
-                              className="accent-[#F6C90E]"
-                            />
+                          <label key={opt.value} className="inline-flex items-center gap-2 bg-[#0F1115] rounded-none px-3 py-2 border border-zinc-700/70">
+                            <input type="checkbox" checked={form.works.includes(opt.value)}
+                                   onChange={() => toggleWork(opt.value)} className="accent-[#F6C90E]" />
                             <span>{opt.label}</span>
                           </label>
                         ))}
                       </div>
-                      {errors.works && (
-                        <p className="mt-1 text-sm text-red-400">{errors.works}</p>
-                      )}
+                      {errors.works && <p className="mt-1 text-sm text-red-400">{errors.works}</p>}
                     </div>
                   </div>
                 </div>
 
-                {/* Précisions */}
-                <Field
-                  as="textarea"
-                  id="message"
-                  name="message"
-                  label="Précisions"
-                  rows={5}
-                  value={form.message}
-                  onChange={handleChange}
-                  error={errors.message}
-                />
+                <Field as="textarea" id="message" name="message" label="Précisions"
+                       rows={5} value={form.message} onChange={handleChange} error={errors.message} />
 
-                {/* Identité */}
-                <Field
-                  id="fullname"
-                  name="fullname"
-                  label="Nom"
-                  value={form.fullname}
-                  onChange={handleChange}
-                  error={errors.fullname}
-                />
+                <Field id="fullname" name="fullname" label="Nom"
+                       value={form.fullname} onChange={handleChange} error={errors.fullname} />
+                <Field id="phone" name="phone" label="Téléphone"
+                       value={form.phone} onChange={handleChange} error={errors.phone} />
+                <Field id="email" name="email" type="email" label="E-mail"
+                       value={form.email} onChange={handleChange} error={errors.email} />
 
-                <Field
-                  id="phone"
-                  name="phone"
-                  label="Téléphone"
-                  value={form.phone}
-                  onChange={handleChange}
-                  error={errors.phone}
-                />
+                <Field as="checkbox" id="rgpd" name="rgpd" checked={form.rgpd}
+                       onChange={handleChange} error={errors.rgpd}
+                       label="En soumettant ce formulaire, j'accepte que mes informations soient utilisées pour traiter ma demande." />
 
-                <Field
-                  id="email"
-                  name="email"
-                  type="email"
-                  label="E-mail"
-                  value={form.email}
-                  onChange={handleChange}
-                  error={errors.email}
-                />
-
-                {/* RGPD */}
-                <Field
-                  as="checkbox"
-                  id="rgpd"
-                  name="rgpd"
-                  checked={form.rgpd}
-                  onChange={handleChange}
-                  error={errors.rgpd}
-                  label="En soumettant ce formulaire, j'accepte que mes informations soient utilisées pour traiter ma demande."
-                />
-
-                {/* Actions */}
                 <div className="flex items-center gap-3">
-                  <button
-                    type="submit"
-                    disabled={submitting}
-                    className={`btn btn-primary btn-square btn-halo ${
-                      submitting ? "opacity-70 cursor-not-allowed" : ""
-                    }`}
-                  >
+                  <button type="submit" disabled={submitting}
+                          className={`btn btn-primary btn-square btn-halo ${submitting ? "opacity-70 cursor-not-allowed" : ""}`}>
                     {submitting ? "Envoi..." : "Envoyer"}
                   </button>
-
-                  {status === "success" && (
-                    <span className="text-sm text-emerald-400">Votre message a été envoyé.</span>
-                  )}
-                  {status === "error" && (
-                    <span className="text-sm text-red-400">Corrigez les champs en rouge.</span>
-                  )}
+                  {status === "success" && <span className="text-sm text-emerald-400">Votre message a été envoyé.</span>}
+                  {status === "error" && <span className="text-sm text-red-400">Corrigez les champs en rouge.</span>}
                 </div>
+
+                {errors._global && <p className="mt-3 text-sm text-red-400">{errors._global}</p>}
               </Panel>
             </div>
           </div>

@@ -13,16 +13,11 @@ export default function ServiceForm() {
     slug: "",
     is_active: true,
     position: 0,
-    duration_minutes: 0,
-    base_price: 0,
-    excerpt: "",
     description: "",
-    // 🔥 nouveaux champs existants
     content_heading: "",
     content_md: "",
     bottom_note: "",
     image_url: "",
-    // ⬇️ champs admin image (ajoutés)
     image_path: null,
     image_path_url: null,
   });
@@ -31,11 +26,9 @@ export default function ServiceForm() {
   const [saving, setSaving] = useState(false);
   const [err, setErr] = useState("");
 
-  // Preview local avant upload
   const [imageFile, setImageFile] = useState(null);
   const [imagePreview, setImagePreview] = useState("");
 
-  // Précharge CSRF et, si édition, charge la fiche
   useEffect(() => {
     (async () => {
       try {
@@ -48,9 +41,6 @@ export default function ServiceForm() {
             slug: data.slug ?? "",
             is_active: !!data.is_active,
             position: Number.isFinite(+data.position) ? +data.position : 0,
-            duration_minutes: Number.isFinite(+data.duration_minutes) ? +data.duration_minutes : 0,
-            base_price: Number.isFinite(+data.base_price) ? +data.base_price : (Number.isFinite(+data.price) ? +data.price : 0),
-            excerpt: data.excerpt ?? "",
             description: data.description ?? "",
             content_heading: data.content_heading ?? "",
             content_md: data.content_md ?? "",
@@ -94,23 +84,17 @@ export default function ServiceForm() {
         slug: form.slug || undefined,
         is_active: !!form.is_active,
         position: Number.isFinite(+form.position) ? +form.position : 0,
-        duration_minutes: Number.isFinite(+form.duration_minutes) ? +form.duration_minutes : 0,
-        base_price: Number.isFinite(+form.base_price) ? +form.base_price : 0,
-        excerpt: form.excerpt || "",
         description: form.description || "",
-        // 🔥 contenu dynamique
         content_heading: form.content_heading || null,
         content_md: form.content_md || null,
         bottom_note: form.bottom_note || null,
-        image_url: form.image_url || null, // compat URL distante
+        image_url: form.image_url || null,
       };
 
       if (isEdit) {
         await api.put(`/api/admin/services/${id}`, payload);
       } else {
-        const created = await api.post("/api/admin/services", payload);
-        // Si tu veux rester sur l'écran d’édition du nouveau service :
-        // navigate(`/admin/services/${created.id}/edit`, { replace: true });
+        await api.post("/api/admin/services", payload);
       }
 
       navigate("/admin", {
@@ -119,7 +103,7 @@ export default function ServiceForm() {
       });
     } catch (e2) {
       const msg =
-        (e2?.data?.message) ||
+        e2?.data?.message ||
         (typeof e2?.data === "string" ? e2.data : null) ||
         "Échec de l’enregistrement.";
       setErr(msg);
@@ -128,7 +112,6 @@ export default function ServiceForm() {
     }
   }
 
-  // —— Upload image locale (admin uniquement) ——
   function onFileSelect(e) {
     const file = e.target.files?.[0];
     setImageFile(file || null);
@@ -152,13 +135,11 @@ export default function ServiceForm() {
       const res = await api.post(`/api/admin/services/${id}/image`, fd, {
         headers: { "Content-Type": "multipart/form-data" },
       });
-      // MAJ du formulaire avec l’URL publique
       setForm((f) => ({
         ...f,
         image_path: res.image_path ?? null,
         image_path_url: res.image_url ?? null,
       }));
-      // Reset preview local (on garde l’aperçu serveur)
       setImageFile(null);
       setImagePreview("");
     } catch (e2) {
@@ -233,148 +214,181 @@ export default function ServiceForm() {
           {/* Bloc général */}
           <div className="space-y-6">
             <div>
-              <label htmlFor="name" className="block text-sm text-zinc-300 mb-1">Nom du service *</label>
+              <label htmlFor="name" className="block text-sm text-zinc-300 mb-1">
+                Nom du service *
+              </label>
               <input
-                id="name" name="name" type="text" required
+                id="name"
+                name="name"
+                type="text"
+                required
                 className="w-full h-12 px-4 bg-zinc-900 border border-zinc-700 text-zinc-100 outline-none focus:border-zinc-500"
-                value={form.name} onChange={onChange}
+                value={form.name}
+                onChange={onChange}
               />
-              <p className="text-xs text-zinc-500 mt-1">2 caractères minimum. Sert à générer le slug si vide.</p>
+              <p className="text-xs text-zinc-500 mt-1">
+                Minimum 2 caractères. Sert aussi à générer automatiquement l’adresse de la page.
+              </p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
-                <label htmlFor="slug" className="block text-sm text-zinc-300 mb-1">Slug (optionnel)</label>
+                <label htmlFor="slug" className="block text-sm text-zinc-300 mb-1">
+                  Adresse de la page (optionnelle)
+                </label>
                 <input
-                  id="slug" name="slug" type="text" placeholder="ex: installation"
+                  id="slug"
+                  name="slug"
+                  type="text"
+                  placeholder="ex: installation"
                   className="w-full h-12 px-4 bg-zinc-900 border border-zinc-700 text-zinc-100 outline-none focus:border-zinc-500"
-                  value={form.slug} onChange={onChange}
+                  value={form.slug}
+                  onChange={onChange}
                 />
+                <p className="text-xs text-zinc-500 mt-1">
+                  Laisse ce champ vide pour que l’adresse de la page soit créée automatiquement à partir du nom du service.
+                </p>
               </div>
               <div>
-                <label htmlFor="position" className="block text-sm text-zinc-300 mb-1">Position</label>
+                <label htmlFor="position" className="block text-sm text-zinc-300 mb-1">
+                  Position
+                </label>
                 <input
-                  id="position" name="position" type="number" min={0}
+                  id="position"
+                  name="position"
+                  type="number"
+                  min={0}
                   className="w-full h-12 px-4 bg-zinc-900 border border-zinc-700 text-zinc-100 outline-none focus:border-zinc-500"
-                  value={form.position} onChange={onChange}
+                  value={form.position}
+                  onChange={onChange}
                 />
               </div>
               <div className="flex items-end h-full">
                 <label className="inline-flex items-center gap-2 text-sm text-zinc-300">
-                  <input type="checkbox" name="is_active" className="h-4 w-4"
-                    checked={!!form.is_active} onChange={onChange} />
+                  <input
+                    type="checkbox"
+                    name="is_active"
+                    className="h-4 w-4"
+                    checked={!!form.is_active}
+                    onChange={onChange}
+                  />
                   Actif
                 </label>
               </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label htmlFor="duration_minutes" className="block text-sm text-zinc-300 mb-1">Durée (minutes)</label>
-                <input
-                  id="duration_minutes" name="duration_minutes" type="number" min={0}
-                  className="w-full h-12 px-4 bg-zinc-900 border border-zinc-700 text-zinc-100 outline-none focus:border-zinc-500"
-                  value={form.duration_minutes} onChange={onChange}
-                />
-              </div>
-              <div>
-                <label htmlFor="base_price" className="block text-sm text-zinc-300 mb-1">Prix de base (€)</label>
-                <input
-                  id="base_price" name="base_price" type="number" step="0.01" min={0}
-                  className="w-full h-12 px-4 bg-zinc-900 border border-zinc-700 text-zinc-100 outline-none focus:border-zinc-500"
-                  value={form.base_price} onChange={onChange}
-                />
-              </div>
-            </div>
-
             <div>
-              <label htmlFor="excerpt" className="block text-sm text-zinc-300 mb-1">Extrait (court)</label>
-              <input
-                id="excerpt" name="excerpt" type="text"
-                className="w-full h-12 px-4 bg-zinc-900 border border-zinc-700 text-zinc-100 outline-none focus:border-zinc-500"
-                value={form.excerpt} onChange={onChange}
-              />
-            </div>
-
-            <div>
-              <label htmlFor="description" className="block text-sm text-zinc-300 mb-1">Description détaillée</label>
+              <label htmlFor="description" className="block text-sm text-zinc-300 mb-1">
+                Description (carte Accueil)
+              </label>
               <textarea
-                id="description" name="description" rows={4}
+                id="description"
+                name="description"
+                rows={4}
                 className="w-full px-4 py-3 bg-zinc-900 border border-zinc-700 text-zinc-100 outline-none focus:border-zinc-500"
-                value={form.description} onChange={onChange}
+                value={form.description}
+                onChange={onChange}
               />
+              <p className="text-xs text-zinc-500 mt-1">
+                Texte affiché dans les cartes de la catégorie “Services” sur la page d’accueil.
+              </p>
             </div>
           </div>
 
-          {/* 🔥 Bloc contenu dynamique (colonne droite de la page service) */}
+          {/* Bloc contenu dynamique */}
           <div className="space-y-6 border-t border-zinc-800 pt-6">
-            <h2 className="text-lg font-semibold text-zinc-200">Contenu de la page service</h2>
+            <h2 className="text-lg font-semibold text-zinc-200">
+              Contenu de la page service
+            </h2>
 
             <div>
-              <label htmlFor="content_heading" className="block text-sm text-zinc-300 mb-1">
+              <label
+                htmlFor="content_heading"
+                className="block text-sm text-zinc-300 mb-1"
+              >
                 Titre du bloc (colonne droite)
               </label>
               <input
-                id="content_heading" name="content_heading" type="text"
+                id="content_heading"
+                name="content_heading"
+                type="text"
                 className="w-full h-12 px-4 bg-zinc-900 border border-zinc-700 text-zinc-100 outline-none focus:border-zinc-500"
-                value={form.content_heading} onChange={onChange}
+                value={form.content_heading}
+                onChange={onChange}
                 placeholder="Ex: Intervention rapide et sécurisée"
               />
             </div>
 
             <div>
               <label htmlFor="content_md" className="block text-sm text-zinc-300 mb-1">
-                Contenu (Markdown)
+                Contenu principal (texte formaté)
               </label>
               <textarea
-                id="content_md" name="content_md" rows={8}
+                id="content_md"
+                name="content_md"
+                rows={8}
                 className="w-full px-4 py-3 bg-zinc-900 border border-zinc-700 text-zinc-100 outline-none focus:border-zinc-500"
-                value={form.content_md} onChange={onChange}
-                placeholder={`Texte libre, avec **gras** et listes :
-- Diagnostic précis du tableau et des circuits
-- Réparation / Remplacement des éléments défectueux
-- Conseils pour éviter les pannes à l’avenir`}
+                value={form.content_md}
+                onChange={onChange}
+                placeholder={`Texte libre avec **gras** et listes :
+- Diagnostic du tableau
+- Réparation de disjoncteurs
+- Conseils de sécurité`}
               />
               <p className="text-xs text-zinc-500 mt-1">
-                Markdown supporté : <code>**gras**</code>, listes via <code>- item</code>. Les puces s’affichent en jaune.
+                Utilise le format Markdown : <code>**gras**</code>, listes avec{" "}
+                <code>-</code>, et une ligne vide pour séparer les paragraphes.
               </p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label htmlFor="bottom_note" className="block text-sm text-zinc-300 mb-1">
+                <label
+                  htmlFor="bottom_note"
+                  className="block text-sm text-zinc-300 mb-1"
+                >
                   Note en bas de page
                 </label>
                 <input
-                  id="bottom_note" name="bottom_note" type="text"
+                  id="bottom_note"
+                  name="bottom_note"
+                  type="text"
                   className="w-full h-12 px-4 bg-zinc-900 border border-zinc-700 text-zinc-100 outline-none focus:border-zinc-500"
-                  value={form.bottom_note} onChange={onChange}
-                  placeholder="Ex: Nous assurons un dépannage rapide et efficace sur Bordeaux Métropole."
+                  value={form.bottom_note}
+                  onChange={onChange}
+                  placeholder="Ex: Nous assurons un dépannage rapide sur Bordeaux Métropole."
                 />
               </div>
 
               <div>
-                <label htmlFor="image_url" className="block text-sm text-zinc-300 mb-1">
+                <label
+                  htmlFor="image_url"
+                  className="block text-sm text-zinc-300 mb-1"
+                >
                   Image (URL) — optionnel
                 </label>
                 <input
-                  id="image_url" name="image_url" type="url"
+                  id="image_url"
+                  name="image_url"
+                  type="url"
                   className="w-full h-12 px-4 bg-zinc-900 border border-zinc-700 text-zinc-100 outline-none focus:border-zinc-500"
-                  value={form.image_url} onChange={onChange}
+                  value={form.image_url}
+                  onChange={onChange}
                   placeholder="https://…"
                 />
                 <p className="text-xs text-zinc-500 mt-1">
-                  Si aucune image locale n’est uploadée, on utilisera cette URL (sinon priorité à l’image locale).
+                  Si aucune image locale n’est uploadée, on utilisera cette URL.
                 </p>
               </div>
             </div>
           </div>
 
-          {/* 🖼️ Bloc image (upload local + preview + suppression) */}
+          {/* Bloc image locale */}
           <div className="space-y-4 border-t border-zinc-800 pt-6">
-            <h2 className="text-lg font-semibold text-zinc-200">Image du service (upload local)</h2>
+            <h2 className="text-lg font-semibold text-zinc-200">
+              Image du service (upload local)
+            </h2>
 
-            {/* Aperçu (priorité: preview local > image_path_url > image_url) */}
             {resolvedImageForPreview ? (
               <div className="w-full max-w-md">
                 <img
@@ -413,7 +427,7 @@ export default function ServiceForm() {
               )}
             </div>
             <p className="text-xs text-zinc-500">
-              Formats autorisés: JPG, JPEG, PNG, WEBP. Taille max 2&nbsp;Mo.
+              Formats autorisés : JPG, JPEG, PNG, WEBP. Taille max : 2 Mo.
             </p>
           </div>
         </form>

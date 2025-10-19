@@ -114,6 +114,14 @@ export default function AdminDashboard() {
             >
               Rafraîchir
             </button>
+            {/* ⬇️ Nouveau bouton Messages (admin) */}
+            <Link
+              to="/admin/messages"
+              className="btn-square inline-flex items-center justify-center px-4 h-11 font-semibold border border-zinc-600 hover:bg-zinc-900 transition-colors"
+              title="Voir les messages"
+            >
+              Messages
+            </Link>
             <Link
               to="/admin/services/new"
               className="btn-square inline-flex items-center justify-center px-4 h-11 font-semibold bg-[#F6C90E] text-black border border-[#F6C90E] hover:bg-black hover:text-[#F6C90E] transition-colors"

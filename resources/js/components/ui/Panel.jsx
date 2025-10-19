@@ -1,9 +1,9 @@
 import React from "react";
 
-// Conteneur générique : bordure + fond + hover
-export default function Panel({ className = "", children, ...rest }) {
+// Conteneur générique : supporte 'as' + propage les props (onSubmit, id, ...)
+export default function Panel({ as: Tag = "div", className = "", children, ...rest }) {
   return (
-    <div
+    <Tag
       className={
         "border border-zinc-800 hover:border-[#F6C90E]/40 transition bg-zinc-900/40 " +
         className
@@ -11,6 +11,6 @@ export default function Panel({ className = "", children, ...rest }) {
       {...rest}
     >
       {children}
-    </div>
+    </Tag>
   );
 }

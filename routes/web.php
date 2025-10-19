@@ -10,6 +10,10 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\Admin\ServiceController as AdminServiceController;
 use App\Http\Controllers\Admin\ServiceImageController;
 
+// 👇 AJOUTS
+use App\Http\Controllers\Api\ContactController;
+use App\Http\Controllers\Admin\ContactMessageController;
+
 use App\Models\Service;
 
 /*
@@ -24,6 +28,11 @@ Route::prefix('api')->group(function () {
 
     // Ping
     Route::get('/ping', fn () => response()->json(['pong' => true]))->name('api.ping');
+
+    // ✅ Formulaire de contact (PUBLIC) — limite d’envoi 5 req / minute
+    Route::post('/contact', [ContactController::class, 'store'])
+        ->middleware('throttle:5,1')
+        ->name('api.contact.store');
 
     // Liste publique des services (actifs)
     Route::get('/services', function (Request $request) {
@@ -155,6 +164,12 @@ Route::middleware('auth:sanctum')
         // ✅ Upload / suppression d'image (protégées)
         Route::post  ('/services/{service}/image', [ServiceImageController::class, 'store'])->name('services.image.store');
         Route::delete('/services/{service}/image', [ServiceImageController::class, 'destroy'])->name('services.image.destroy');
+
+        // ➕ Messages de contact (ADMIN)
+        Route::get   ('/contact-messages',                      [ContactMessageController::class, 'index'])->name('contact.index');
+        Route::get   ('/contact-messages/{contactMessage}',     [ContactMessageController::class, 'show'])->name('contact.show');
+        Route::delete('/contact-messages/{contactMessage}',     [ContactMessageController::class, 'destroy'])->name('contact.destroy');
+        Route::post  ('/contact-messages/{contactMessage}/reply',[ContactMessageController::class, 'reply'])->name('contact.reply');
 
         // Profil Admin connecté
         Route::get('/me', function (Request $request) {
