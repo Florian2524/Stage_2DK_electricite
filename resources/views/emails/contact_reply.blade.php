@@ -1,9 +1,3 @@
-<!doctype html>
-<html lang="fr">
-  <body>
-    <p>Bonjour {{ $toName }},</p>
-    <p style="white-space: pre-wrap;">{{ $bodyText }}</p>
-    <p>Cordialement,</p>
-    <p>2DK Électricité</p>
-  </body>
-</html>
+<p>Bonjour {{ $name }},</p>
+<p style="white-space: pre-wrap">{{ $bodyText }}</p>
+<p style="margin-top:16px; font-size:12px; opacity:.7">— Réponse 2DK Électricité —</p>

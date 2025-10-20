@@ -10,7 +10,7 @@ import api from "../lib/api";
 const SERVICE_OPTIONS = (SERVICES_ITEMS || [])
   .filter((s) => !!s?.label && !!s?.href)
   .map((s) => ({
-    value: (s.slug ?? s.href.split("/").filter(Boolean).pop()),
+    value: s.slug ?? s.href.split("/").filter(Boolean).pop(),
     label: s.label,
   }));
 
@@ -83,26 +83,31 @@ export default function Contact() {
     // Concat lisible pour le champ message (email + base)
     const lines = [];
     const subjectLabel =
-      form.subject === "devis" ? "Demande de devis / tarifs"
-      : form.subject === "prestations" ? "Questions sur nos prestations"
-      : "Autre";
+      form.subject === "devis"
+        ? "Demande de devis / tarifs"
+        : form.subject === "prestations"
+        ? "Questions sur nos prestations"
+        : "Autre";
 
     if (form.message.trim()) lines.push(form.message.trim());
 
     const contactInfos = [];
     if (form.fullname.trim()) contactInfos.push(`Nom: ${form.fullname.trim()}`);
-    if (form.phone.trim())    contactInfos.push(`Téléphone: ${form.phone.trim()}`);
-    if (contactInfos.length)  lines.push("", contactInfos.join(" | "));
+    if (form.phone.trim()) contactInfos.push(`Téléphone: ${form.phone.trim()}`);
+    if (contactInfos.length) lines.push("", contactInfos.join(" | "));
 
     if (form.rgpd) lines.push("RGPD: consentement donné pour le traitement de la demande.");
 
     if (isDevis) {
       const devisLines = [];
-      if (form.ownership) devisLines.push(`Statut d’occupation: ${form.ownership === "proprietaire" ? "Propriétaire" : "Locataire"}`);
+      if (form.ownership)
+        devisLines.push(
+          `Statut d’occupation: ${form.ownership === "proprietaire" ? "Propriétaire" : "Locataire"}`
+        );
       if (form.site_address.trim()) devisLines.push(`Adresse du bien: ${form.site_address.trim()}`);
       if (form.works.length) {
-        const labelByValue = Object.fromEntries(SERVICE_OPTIONS.map(o => [o.value, o.label]));
-        const worksLabels = form.works.map(w => labelByValue[w] || w);
+        const labelByValue = Object.fromEntries(SERVICE_OPTIONS.map((o) => [o.value, o.label]));
+        const worksLabels = form.works.map((w) => labelByValue[w] || w);
         devisLines.push(`Travaux demandés: ${worksLabels.join(", ")}`);
       }
       if (devisLines.length) lines.push("", "— Informations pour devis —", ...devisLines);
@@ -174,8 +179,13 @@ export default function Contact() {
             <ContactAside />
             <hr className="md:hidden my-4 border-t border-[#F6C90E]/20" />
             <div className="md:col-span-2">
-              <Panel as="form" id="contact-form" onSubmit={handleSubmit} noValidate
-                     className="p-6 md:p-7 shadow-[0_10px_40px_-10px_rgba(0,0,0,0.6)]">
+              <Panel
+                as="form"
+                id="contact-form"
+                onSubmit={handleSubmit}
+                noValidate
+                className="p-6 md:p-7 shadow-[0_10px_40px_-10px_rgba(0,0,0,0.6)]"
+              >
                 <Field
                   as="select"
                   id="subject"
@@ -192,7 +202,12 @@ export default function Contact() {
                   ]}
                 />
 
-                <div className={`transition-all duration-300 overflow-hidden ${isDevis ? "max-h-[1200px] opacity-100" : "max-h-0 opacity-0"}`} aria-hidden={!isDevis}>
+                <div
+                  className={`transition-all duration-300 overflow-hidden ${
+                    isDevis ? "max-h-[1200px] opacity-100" : "max-h-0 opacity-0"
+                  }`}
+                  aria-hidden={!isDevis}
+                >
                   <div className="mt-4 space-y-6">
                     <Field
                       as="select"
@@ -220,42 +235,99 @@ export default function Contact() {
                       <div className="text-sm font-medium text-zinc-200">Quels travaux ?</div>
                       <div className="mt-2 grid grid-cols-1 sm:grid-cols-2 gap-2">
                         {SERVICE_OPTIONS.map((opt) => (
-                          <label key={opt.value} className="inline-flex items-center gap-2 bg-[#0F1115] rounded-none px-3 py-2 border border-zinc-700/70">
-                            <input type="checkbox" checked={form.works.includes(opt.value)}
-                                   onChange={() => toggleWork(opt.value)} className="accent-[#F6C90E]" />
+                          <label
+                            key={opt.value}
+                            className="inline-flex items-center gap-2 bg-[#0F1115] px-3 py-2 border border-zinc-700/70"
+                          >
+                            <input
+                              type="checkbox"
+                              checked={form.works.includes(opt.value)}
+                              onChange={() => toggleWork(opt.value)}
+                              className="accent-[#F6C90E]"
+                            />
                             <span>{opt.label}</span>
                           </label>
                         ))}
                       </div>
-                      {errors.works && <p className="mt-1 text-sm text-red-400">{errors.works}</p>}
+                      {errors.works && (
+                        <p className="mt-1 text-sm text-red-400">{errors.works}</p>
+                      )}
                     </div>
                   </div>
                 </div>
 
-                <Field as="textarea" id="message" name="message" label="Précisions"
-                       rows={5} value={form.message} onChange={handleChange} error={errors.message} />
+                <Field
+                  as="textarea"
+                  id="message"
+                  name="message"
+                  label="Précisions"
+                  rows={5}
+                  value={form.message}
+                  onChange={handleChange}
+                  error={errors.message}
+                />
 
-                <Field id="fullname" name="fullname" label="Nom"
-                       value={form.fullname} onChange={handleChange} error={errors.fullname} />
-                <Field id="phone" name="phone" label="Téléphone"
-                       value={form.phone} onChange={handleChange} error={errors.phone} />
-                <Field id="email" name="email" type="email" label="E-mail"
-                       value={form.email} onChange={handleChange} error={errors.email} />
+                <Field
+                  id="fullname"
+                  name="fullname"
+                  label="Nom"
+                  value={form.fullname}
+                  onChange={handleChange}
+                  error={errors.fullname}
+                />
+                <Field
+                  id="phone"
+                  name="phone"
+                  label="Téléphone"
+                  value={form.phone}
+                  onChange={handleChange}
+                  error={errors.phone}
+                />
+                <Field
+                  id="email"
+                  name="email"
+                  type="email"
+                  label="E-mail"
+                  value={form.email}
+                  onChange={handleChange}
+                  error={errors.email}
+                />
 
-                <Field as="checkbox" id="rgpd" name="rgpd" checked={form.rgpd}
-                       onChange={handleChange} error={errors.rgpd}
-                       label="En soumettant ce formulaire, j'accepte que mes informations soient utilisées pour traiter ma demande." />
+                <Field
+                  as="checkbox"
+                  id="rgpd"
+                  name="rgpd"
+                  checked={form.rgpd}
+                  onChange={handleChange}
+                  error={errors.rgpd}
+                  label="En soumettant ce formulaire, j'accepte que mes informations soient utilisées pour traiter ma demande."
+                />
 
                 <div className="flex items-center gap-3">
-                  <button type="submit" disabled={submitting}
-                          className={`btn btn-primary btn-square btn-halo ${submitting ? "opacity-70 cursor-not-allowed" : ""}`}>
+                  <button
+                    type="submit"
+                    disabled={submitting}
+                    className={`btn-square px-4 h-10 font-semibold border border-[#F6C90E] text-[#F6C90E] hover:bg-black hover:text-[#F6C90E]/90 ${
+                      submitting ? "opacity-70 cursor-not-allowed" : ""
+                    }`}
+                  >
                     {submitting ? "Envoi..." : "Envoyer"}
                   </button>
-                  {status === "success" && <span className="text-sm text-emerald-400">Votre message a été envoyé.</span>}
-                  {status === "error" && <span className="text-sm text-red-400">Corrigez les champs en rouge.</span>}
+                  {status === "success" && (
+                    <span className="text-sm text-emerald-400">
+                      Votre message a été envoyé.
+                    </span>
+                  )}
+                  {status === "error" && (
+                    <span className="text-sm text-red-400">
+                      Corrigez les champs en rouge.
+                    </span>
+                  )}
                 </div>
 
-                {errors._global && <p className="mt-3 text-sm text-red-400">{errors._global}</p>}
+                {errors._global && (
+                  <p className="mt-3 text-sm text-red-400">{errors._global}</p>
+                )}
               </Panel>
             </div>
           </div>

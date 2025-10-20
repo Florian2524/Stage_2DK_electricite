@@ -1,65 +1,64 @@
 <?php
 
+
 namespace App\Http\Controllers\Api;
+
 
 use App\Http\Controllers\Controller;
 use App\Mail\ContactReceivedMail;
-use App\Mail\ContactAutoReplyMail; // ⬅️ ajout
+use App\Mail\ContactAutoReplyMail;
 use App\Models\ContactMessage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Validation\Rule;
 
+
 class ContactController extends Controller
 {
-    public function store(Request $request)
-    {
-        // Champs de base
-        $rules = [
-            'name'    => ['required','string','min:2','max:120'],
-            'email'   => ['required','email','max:255'],
-            'subject' => ['required','string','min:2','max:150'],
-            'message' => ['required','string','min:5'],
-        ];
+public function store(Request $request)
+{
+$data = $request->validate([
+'name' => ['required','string','min:2','max:120'],
+'email' => ['required','email','max:150'],
+'subject' => ['required','string','min:2','max:150'],
+'message' => ['required','string','min:5'],
 
-        // Champs structurés (optionnels)
-        $rules += [
-            'phone'        => ['nullable','string','max:30'],
-            'ownership'    => ['nullable', Rule::in(['proprietaire','locataire'])],
-            'site_address' => ['nullable','string','max:255'],
-            'works'        => ['nullable','array'],
-            'works.*'      => ['string','max:50'],
-            'rgpd'         => ['nullable','boolean'],
-        ];
 
-        $data = $request->validate($rules);
+'phone' => ['nullable','string','max:50'],
+'ownership' => ['nullable', Rule::in(['proprietaire','locataire'])],
+'site_address' => ['nullable','string','max:255'],
+'works' => ['nullable','array'],
+'works.*' => ['string','max:80'],
+'rgpd' => ['boolean'],
+]);
 
-        // Mapping vers colonnes
-        $payload = [
-            'name'         => $data['name'],
-            'email'        => $data['email'],
-            'subject'      => $data['subject'],
-            'message'      => $data['message'],
-            'phone'        => $data['phone']        ?? null,
-            'ownership'    => $data['ownership']    ?? null,
-            'site_address' => $data['site_address'] ?? null,
-            'works_json'   => isset($data['works']) ? array_values($data['works']) : null,
-            'rgpd'         => (bool)($data['rgpd'] ?? false),
-        ];
 
-        $msg = ContactMessage::create($payload);
+$msg = new ContactMessage();
+$msg->fill([
+'name' => $data['name'],
+'email' => $data['email'],
+'subject' => $data['subject'],
+'message' => $data['message'],
+'phone' => $data['phone'] ?? null,
+'ownership' => $data['ownership'] ?? null,
+'site_address'=> $data['site_address'] ?? null,
+'works_json' => $data['works'] ?? null,
+'rgpd' => (bool)($data['rgpd'] ?? false),
+]);
+$msg->is_read = false;
+$msg->save();
 
-        // Mail admin (destinataire = MAIL_FROM_ADDRESS par défaut)
-        $to = config('mail.from.address');
-        if ($to) {
-            Mail::to($to)->send(new ContactReceivedMail($msg));
-        }
 
-        // Accusé de réception au visiteur
-        if (!empty($msg->email)) {
-            Mail::to($msg->email)->send(new ContactAutoReplyMail($msg));
-        }
+// Envoi mail admin
+if ($to = config('mail.from.address')) {
+Mail::to($to)->send(new ContactReceivedMail($msg));
+}
 
-        return response()->json(['success' => true], 201);
-    }
+
+// Accusé de réception visiteur
+Mail::to($msg->email)->send(new ContactAutoReplyMail($msg));
+
+
+return response()->json(['success' => true], 201);
+}
 }

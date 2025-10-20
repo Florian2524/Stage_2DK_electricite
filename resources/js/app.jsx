@@ -35,24 +35,25 @@ function NotFound() {
 
 function App() {
   return (
-    <BrowserRouter>
-      <ScrollToTop />
-      <Header />
+    <AuthProvider>
+      <BrowserRouter>
+        <ScrollToTop />
+        <Header />
 
-      <AuthProvider>
         <Routes>
+          {/* Public */}
           <Route path="/" element={<Home />} />
-
           <Route path="/contact" element={<Contact />} />
           <Route path="/contactez-nous" element={<Contact />} />
-
           <Route path="/mentions-legales" element={<MentionsLegales />} />
 
           {/* Service dynamique */}
           <Route path="/services/:slug" element={<ServiceDetail />} />
 
-          {/* Admin */}
+          {/* Admin (public) */}
           <Route path="/admin/login" element={<AdminLogin />} />
+
+          {/* Admin (protégé) */}
           <Route
             path="/admin"
             element={
@@ -77,8 +78,7 @@ function App() {
               </ProtectedRoute>
             }
           />
-
-          {/* ⬇️ AJOUT : page des messages admin */}
+          {/* Messages admin */}
           <Route
             path="/admin/messages"
             element={
@@ -88,12 +88,13 @@ function App() {
             }
           />
 
+          {/* 404 */}
           <Route path="*" element={<NotFound />} />
         </Routes>
-      </AuthProvider>
 
-      <Footer />
-    </BrowserRouter>
+        <Footer />
+      </BrowserRouter>
+    </AuthProvider>
   );
 }
 
