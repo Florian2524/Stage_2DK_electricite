@@ -14,6 +14,7 @@ export default function ServiceForm() {
     is_active: true,
     position: 0,
     description: "",
+    lead: "", // ✅ nouveau champ
     content_heading: "",
     content_md: "",
     bottom_note: "",
@@ -29,6 +30,7 @@ export default function ServiceForm() {
   const [imageFile, setImageFile] = useState(null);
   const [imagePreview, setImagePreview] = useState("");
 
+  /* ================== CHARGEMENT DES DONNÉES ================== */
   useEffect(() => {
     (async () => {
       try {
@@ -41,7 +43,8 @@ export default function ServiceForm() {
             slug: data.slug ?? "",
             is_active: !!data.is_active,
             position: Number.isFinite(+data.position) ? +data.position : 0,
-            description: data.description ?? "",
+            description: data.description ?? data.excerpt ?? "",
+            lead: data.lead ?? "",
             content_heading: data.content_heading ?? "",
             content_md: data.content_md ?? "",
             bottom_note: data.bottom_note ?? "",
@@ -58,6 +61,7 @@ export default function ServiceForm() {
     })();
   }, [id, isEdit]);
 
+  /* ================== FORMULAIRE ================== */
   function setField(key, val) {
     setForm((f) => ({ ...f, [key]: val }));
   }
@@ -73,10 +77,12 @@ export default function ServiceForm() {
   async function onSubmit(e) {
     e.preventDefault();
     setErr("");
+
     if (!form.name || form.name.trim().length < 2) {
       setErr("Le nom est obligatoire (2 caractères min).");
       return;
     }
+
     setSaving(true);
     try {
       const payload = {
@@ -85,6 +91,7 @@ export default function ServiceForm() {
         is_active: !!form.is_active,
         position: Number.isFinite(+form.position) ? +form.position : 0,
         description: form.description || "",
+        lead: form.lead || "", // ✅ champ ajouté
         content_heading: form.content_heading || null,
         content_md: form.content_md || null,
         bottom_note: form.bottom_note || null,
@@ -112,6 +119,7 @@ export default function ServiceForm() {
     }
   }
 
+  /* ================== UPLOAD IMAGE ================== */
   function onFileSelect(e) {
     const file = e.target.files?.[0];
     setImageFile(file || null);
@@ -127,6 +135,7 @@ export default function ServiceForm() {
       setErr("Aucun fichier sélectionné.");
       return;
     }
+
     setErr("");
     try {
       await api.ensureCsrf();
@@ -168,6 +177,7 @@ export default function ServiceForm() {
   const resolvedImageForPreview =
     imagePreview || form.image_path_url || form.image_url || "";
 
+  /* ================== RENDU ================== */
   if (loading) {
     return (
       <main className="min-h-[70vh] bg-[#0B0B0B] text-zinc-200">
@@ -181,6 +191,7 @@ export default function ServiceForm() {
   return (
     <main className="min-h-[70vh] bg-[#0B0B0B] text-zinc-200">
       <section className="max-w-4xl mx-auto px-4 sm:px-6 py-10">
+        {/* HEADER */}
         <header className="flex items-center justify-between gap-4">
           <div>
             <h1 className="text-3xl font-extrabold text-zinc-100">
@@ -210,6 +221,7 @@ export default function ServiceForm() {
 
         {err && <p className="mt-4 text-red-500 text-sm">{err}</p>}
 
+        {/* FORM */}
         <form id="service-form" onSubmit={onSubmit} className="mt-6 space-y-8">
           {/* Bloc général */}
           <div className="space-y-6">
@@ -227,7 +239,7 @@ export default function ServiceForm() {
                 onChange={onChange}
               />
               <p className="text-xs text-zinc-500 mt-1">
-                Minimum 2 caractères. Sert aussi à générer automatiquement l’adresse de la page.
+                Sert aussi à générer automatiquement l’adresse de la page.
               </p>
             </div>
 
@@ -245,9 +257,6 @@ export default function ServiceForm() {
                   value={form.slug}
                   onChange={onChange}
                 />
-                <p className="text-xs text-zinc-500 mt-1">
-                  Laisse ce champ vide pour que l’adresse de la page soit créée automatiquement à partir du nom du service.
-                </p>
               </div>
               <div>
                 <label htmlFor="position" className="block text-sm text-zinc-300 mb-1">
@@ -278,19 +287,37 @@ export default function ServiceForm() {
             </div>
 
             <div>
+              <label htmlFor="lead" className="block text-sm text-zinc-300 mb-1">
+                Texte sous le titre (page service)
+              </label>
+              <input
+                id="lead"
+                name="lead"
+                type="text"
+                className="w-full h-12 px-4 bg-zinc-900 border border-zinc-700 text-zinc-100 outline-none focus:border-zinc-500"
+                value={form.lead}
+                onChange={onChange}
+                placeholder="Ex: Sécurité, conformité et confort électrique au quotidien."
+              />
+              <p className="text-xs text-zinc-500 mt-1">
+                S’affiche juste sous le grand titre jaune sur la page du service.
+              </p>
+            </div>
+
+            <div>
               <label htmlFor="description" className="block text-sm text-zinc-300 mb-1">
                 Description (carte Accueil)
               </label>
               <textarea
                 id="description"
                 name="description"
-                rows={4}
+                rows={3}
                 className="w-full px-4 py-3 bg-zinc-900 border border-zinc-700 text-zinc-100 outline-none focus:border-zinc-500"
                 value={form.description}
                 onChange={onChange}
               />
               <p className="text-xs text-zinc-500 mt-1">
-                Texte affiché dans les cartes de la catégorie “Services” sur la page d’accueil.
+                Texte visible en survol de la carte sur la page d’accueil.
               </p>
             </div>
           </div>
@@ -331,7 +358,7 @@ export default function ServiceForm() {
                 value={form.content_md}
                 onChange={onChange}
                 placeholder={`Texte libre avec **gras** et listes :
-- Diagnostic du tableau
+- Diagnostic complet
 - Réparation de disjoncteurs
 - Conseils de sécurité`}
               />
@@ -356,7 +383,7 @@ export default function ServiceForm() {
                   className="w-full h-12 px-4 bg-zinc-900 border border-zinc-700 text-zinc-100 outline-none focus:border-zinc-500"
                   value={form.bottom_note}
                   onChange={onChange}
-                  placeholder="Ex: Nous assurons un dépannage rapide sur Bordeaux Métropole."
+                  placeholder="Ex: Nous intervenons sur toute la métropole bordelaise."
                 />
               </div>
 
@@ -376,9 +403,6 @@ export default function ServiceForm() {
                   onChange={onChange}
                   placeholder="https://…"
                 />
-                <p className="text-xs text-zinc-500 mt-1">
-                  Si aucune image locale n’est uploadée, on utilisera cette URL.
-                </p>
               </div>
             </div>
           </div>

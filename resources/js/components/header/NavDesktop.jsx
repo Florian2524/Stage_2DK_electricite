@@ -40,21 +40,19 @@ export default function NavDesktop({
         role="navigation"
         aria-label="Navigation principale"
       >
-        {/* Accueil — carré + halo */}
+        {/* Accueil — soulignement + hover jaune */}
         <a
           href="/"
           onClick={handleAccueil}
-          className={`inline-flex items-center gap-2
-                      bg-neutral-100 text-neutral-900
-                      px-4 py-2 font-medium transition
-                      rounded-none btn-halo
-                      ${accueilActive ? "bg-neutral-200" : ""}`}
+          className={`inline-flex items-center gap-1 px-1 py-2 font-medium border-b-2 transition-colors duration-300
+                      text-neutral-900 border-transparent hover:text-[#F6C90E] hover:border-[#F6C90E]
+                      ${accueilActive ? "text-[#F6C90E] border-[#F6C90E]" : ""}`}
           style={{ ["--btn-shadow-rgb"]: "246,201,14" }}
         >
           Accueil
         </a>
 
-        {/* Services — carré + halo */}
+        {/* Services — soulignement + hover jaune */}
         <div
           className="relative"
           onMouseEnter={openServices}
@@ -65,11 +63,9 @@ export default function NavDesktop({
           <a
             href="#prestations"
             onClick={handleServices}
-            className={`inline-flex items-center gap-1
-                        bg-neutral-100 text-neutral-900
-                        px-4 py-2 font-medium transition
-                        rounded-none btn-halo
-                        ${servicesActive ? "bg-neutral-200" : ""}`}
+            className={`inline-flex items-center gap-1 px-1 py-2 font-medium border-b-2 transition-colors duration-300
+                        text-neutral-900 border-transparent hover:text-[#F6C90E] hover:border-[#F6C90E]
+                        ${servicesActive ? "text-[#F6C90E] border-[#F6C90E]" : ""}`}
             aria-haspopup="true"
             aria-expanded={servicesHoverOpen}
             style={{ ["--btn-shadow-rgb"]: "246,201,14" }}
@@ -126,24 +122,24 @@ export default function NavDesktop({
           )}
         </div>
 
-        {/* Infos utiles — carré + halo */}
+        {/* Infos utiles — contour noir + hover jaune */}
         <button
           onClick={() => setInfoOpen(true)}
           className="inline-flex items-center gap-2
-                     bg-neutral-100 hover:bg-neutral-200 text-neutral-900
-                     px-4 py-2 font-medium transition
+                     bg-white text-neutral-900 border border-neutral-900
+                     px-4 py-2 font-medium transition hover:bg-[#F6C90E]
                      rounded-none btn-halo"
           aria-haspopup="dialog"
           aria-expanded={infoOpen}
           aria-controls="infos-utiles-panel"
           title="Voir les informations utiles"
-          style={{ ["--btn-shadow-rgb"]: "246,201,14" }}
+          style={{ ["--btn-shadow-rgb"]: "0,0,0" }}
         >
           <IconAlert className="h-5 w-5" />
           Infos utiles
         </button>
 
-        {/* Contactez-nous — carré + halo (rouge) */}
+        {/* Contactez-nous — ROUGE plein comme avant */}
         <button
           onClick={handleContact}
           className="inline-flex items-center gap-2

@@ -1,0 +1,37 @@
+[90m= [39m[34;4mIlluminate\Database\Eloquent\Collection[39;24m {#1360
+    [34mall[39m: [
+      [34;4mApp\Models\Service[39;24m {#6088
+        [34mid[39m: [35m12[39m,
+        [34mname[39m: "[32mDépannage[39m",
+        [34mslug[39m: "[32mdepannage[39m",
+        [34mis_active[39m: [35m1[39m,
+        [34mposition[39m: [35m1[39m,
+        +[1mimage_path_url[22m: [36mnull[39m,
+      },
+      [34;4mApp\Models\Service[39;24m {#6089
+        [34mid[39m: [35m6[39m,
+        [34mname[39m: "[32mInstallation[39m",
+        [34mslug[39m: "[32minstallation[39m",
+        [34mis_active[39m: [35m1[39m,
+        [34mposition[39m: [35m2[39m,
+        +[1mimage_path_url[22m: [36mnull[39m,
+      },
+      [34;4mApp\Models\Service[39;24m {#6090
+        [34mid[39m: [35m3[39m,
+        [34mname[39m: "[32mMise aux normes[39m",
+        [34mslug[39m: "[32mmise-aux-normes[39m",
+        [34mis_active[39m: [35m1[39m,
+        [34mposition[39m: [35m3[39m,
+        +[1mimage_path_url[22m: [36mnull[39m,
+      },
+      [34;4mApp\Models\Service[39;24m {#6091
+        [34mid[39m: [35m11[39m,
+        [34mname[39m: "[32mRénovation[39m",
+        [34mslug[39m: "[32mrenovation[39m",
+        [34mis_active[39m: [35m1[39m,
+        [34mposition[39m: [35m4[39m,
+        +[1mimage_path_url[22m: [36mnull[39m,
+      },
+    ],
+  }
+

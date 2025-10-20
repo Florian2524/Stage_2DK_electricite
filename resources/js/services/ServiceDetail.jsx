@@ -3,6 +3,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import api from "../lib/api";
 
+// Fallbacks locaux si aucune image n'est fournie
 import srvInstall from "../../images/services/installation.jpg";
 import srvNormes from "../../images/services/mise-aux-normes.jpg";
 import srvRenov from "../../images/services/renovation.jpg";
@@ -17,7 +18,7 @@ function pickImageByKey(s = "") {
   return null;
 }
 
-// Mini parser Markdown (identique à ta version)
+/* ---------- Mini parser Markdown (gras + listes) ---------- */
 function escapeHtml(str) {
   return String(str).replace(/[&<>"']/g, (c) => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c]));
 }
@@ -42,7 +43,8 @@ function mdToHtml(md = "") {
       if (pbuf.length) flushP();
       if (!inList) {
         inList = true;
-        out.push(`<ul class="list-disc pl-5 mb-4 marker:text-[#F6C90E] space-y-2">`);
+        // puces jaunes & espacement comme ancienne maquette
+        out.push(`<ul class="list-disc pl-6 md:pl-7 mb-6 marker:text-[#F6C90E] space-y-3">`);
       }
       const item = escapeHtml(m[1]).replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
       out.push(`<li>${item}</li>`);
@@ -59,6 +61,8 @@ function mdToHtml(md = "") {
   flushP();
   return out.join("\n");
 }
+
+/* ========================================================= */
 
 export default function ServiceDetail() {
   const { slug } = useParams();
@@ -82,18 +86,15 @@ export default function ServiceDetail() {
 
   const imgSrc = useMemo(() => {
     if (!data) return null;
-    // 1) URL résolue par l’API publique (image_path -> /storage/..)
-    if (data.image_path_url) return data.image_path_url;
-    // 2) URL distante (si fournie)
-    if (data.image_url) return data.image_url;
-    // 3) Fallback local par mots-clés
+    if (data.image_path_url) return data.image_path_url; // image locale uploadée
+    if (data.image_url) return data.image_url;           // URL distante
     return pickImageByKey(data.slug) || pickImageByKey(data.name) || null;
   }, [data]);
 
   if (err) {
     return (
       <main className="min-h-[70vh] bg-[#0B0B0B] text-zinc-200">
-        <section className="max-w-6xl mx-auto px-6 md:px-10 xl:px-16 py-10">
+        <section className="max-w-7xl mx-auto px-6 md:px-10 xl:px-16 py-10">
           <h1 className="text-3xl font-extrabold text-zinc-100 mb-3">Service introuvable</h1>
           <p className="text-zinc-400">{err}</p>
         </section>
@@ -104,13 +105,13 @@ export default function ServiceDetail() {
   if (!data) {
     return (
       <main className="min-h-[70vh] bg-[#0B0B0B] text-zinc-200">
-        <section className="max-w-6xl mx-auto px-6 md:px-10 xl:px-16 py-10">
-          <div className="h-8 w-2/3 bg-zinc-800 animate-pulse mb-3" />
-          <div className="h-4 w-3/4 bg-zinc-800 animate-pulse mb-8" />
+        <section className="max-w-7xl mx-auto px-6 md:px-10 xl:px-16 py-10">
+          <div className="h-10 w-2/3 bg-zinc-800 animate-pulse mb-3" />
+          <div className="h-5 w-3/4 bg-zinc-800 animate-pulse mb-8" />
           <div className="grid md:grid-cols-12 gap-6">
-            <div className="md:col-span-7 h-[320px] bg-zinc-800 animate-pulse" />
+            <div className="md:col-span-7 h-[340px] bg-zinc-800 animate-pulse" />
             <div className="md:col-span-5 space-y-3">
-              <div className="h-7 w-3/4 bg-zinc-800 animate-pulse" />
+              <div className="h-8 w-3/4 bg-zinc-800 animate-pulse" />
               <div className="h-4 w-full bg-zinc-800 animate-pulse" />
               <div className="h-4 w-5/6 bg-zinc-800 animate-pulse" />
               <div className="h-4 w-4/6 bg-zinc-800 animate-pulse" />
@@ -122,58 +123,77 @@ export default function ServiceDetail() {
     );
   }
 
-  const heading = data.content_heading || "";
-  const html = mdToHtml(data.content_md || "");
+  // Champs de contenu
+  const title = data.name || "Service";
+  const lead  = (typeof data.lead === "string" && data.lead.trim()) ? data.lead.trim() : "";
+  const rightTitle = data.content_heading || "";
+  const htmlMd = mdToHtml(data.content_md || "");
+  const bodyFallback = data.content ? String(data.content) : "";
 
   return (
     <main className="bg-[#0B0B0B] text-zinc-200">
-      <section className="max-w-6xl mx-auto px-6 md:px-10 xl:px-16 py-8 md:py-10">
-        <h1 className="text-[40px] md:text-[48px] font-extrabold text-[#F6C90E] leading-tight">
-          {data.name} à Bordeaux Métropole (CUB)
+      <section className="max-w-7xl mx-auto px-6 md:px-10 xl:px-16 py-10 md:py-12">
+        {/* H1 + lead */}
+        <h1 className="text-[40px] md:text-[56px] font-extrabold leading-tight text-[#F6C90E]">
+          {title} à Bordeaux Métropole (CUB)
         </h1>
 
-        {!!data.excerpt && (
-          <p className="mt-2 text-lg text-zinc-300">{data.excerpt}</p>
+        {!!lead && (
+          <p className="mt-2 text-base md:text-lg leading-relaxed text-zinc-400 max-w-3xl">
+            {lead}
+          </p>
         )}
 
-        <div className="mt-8 grid md:grid-cols-12 gap-6">
+        {/* Deux colonnes */}
+        <div className="mt-8 md:mt-10 grid md:grid-cols-12 gap-8">
+          {/* Image */}
           <div className="md:col-span-7">
             <div className="bg-black ring-1 ring-black/30">
               {imgSrc ? (
-                <img src={imgSrc} alt={data.name} className="w-full h-full object-cover" />
+                <img
+                  src={imgSrc}
+                  alt={title}
+                  className="w-full h-auto object-cover"
+                />
               ) : (
                 <div className="aspect-[4/3] bg-zinc-800" />
               )}
             </div>
           </div>
 
+          {/* Contenu droite */}
           <div className="md:col-span-5">
-            {!!heading && (
-              <h2 className="text-3xl md:text-4xl font-extrabold text-[#F6C90E] leading-tight">
-                {heading}
+            {!!rightTitle && (
+              <h2 className="text-[28px] md:text-[36px] font-extrabold leading-tight text-[#F6C90E]">
+                {rightTitle}
               </h2>
             )}
 
-            {!!html && (
+            {htmlMd ? (
               <div
-                className="mt-3 text-[17px] text-zinc-200"
-                dangerouslySetInnerHTML={{ __html: html }}
+                className="mt-4 text-[17px] leading-relaxed text-zinc-200"
+                dangerouslySetInnerHTML={{ __html: htmlMd }}
               />
-            )}
+            ) : bodyFallback ? (
+              <p className="mt-4 text-[17px] leading-relaxed text-zinc-200">
+                {bodyFallback}
+              </p>
+            ) : null}
 
             <Link
               to="/contact"
-              className="inline-block mt-4 px-6 py-3 bg-[#D31920] text-white font-semibold hover:brightness-95"
+              className="inline-block mt-6 px-7 py-3.5 bg-[#D31920] text-white font-semibold hover:brightness-95 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#D31920] focus-visible:ring-offset-[#0B0B0B] transition"
             >
               Contactez-nous
             </Link>
           </div>
         </div>
 
+        {/* Note bas de page */}
         {!!data.bottom_note && (
-          <div className="mt-8 flex items-start gap-3">
+          <div className="mt-10 md:mt-12 flex items-start gap-4">
             <span className="mt-1 inline-block h-6 w-1.5 bg-[#F6C90E]" />
-            <p className="text-zinc-200">{data.bottom_note}</p>
+            <p className="text-lg text-zinc-200">{data.bottom_note}</p>
           </div>
         )}
       </section>
