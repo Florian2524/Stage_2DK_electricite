@@ -1,11 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import {
-  IconAlert,
-  IconMail,
-  IconSun,
-  IconMoon,
-} from "./Icons";
+import { IconAlert, IconMail } from "./Icons";
 
 export default function NavDesktop({
   cls,
@@ -21,27 +16,24 @@ export default function NavDesktop({
   infoOpen,
   setInfoOpen,
   CTA_URL,
-  theme,
-  toggleTheme,
-  // ↓ nouveaux (facultatifs)
   servicesLoading = false,
   servicesError = "",
 }) {
   const hasItems = Array.isArray(SERVICES_ITEMS) && SERVICES_ITEMS.length > 0;
 
   return (
-    <>
-      {/* Nav desktop */}
-      <nav
-        className="hidden md:flex items-center gap-6"
-        role="navigation"
-        aria-label="Navigation principale"
-      >
-        {/* Accueil — soulignement + hover jaune */}
+    <nav
+      className="hidden md:flex items-center justify-between flex-1 gap-10 ml-10 xl:ml-14"
+      role="navigation"
+      aria-label="Navigation principale"
+    >
+      {/* === Zone gauche : liens principaux === */}
+      <div className="flex items-center gap-8 xl:gap-10 text-[18px] xl:text-[19px]">
+        {/* Accueil */}
         <a
           href="/"
           onClick={handleAccueil}
-          className={`inline-flex items-center gap-1 px-1 py-2 font-medium border-b-2 transition-colors duration-300
+          className={`inline-flex items-center gap-1 px-3 py-3.5 font-medium border-b-2 transition-colors duration-300
                       text-neutral-900 border-transparent hover:text-[#F6C90E] hover:border-[#F6C90E]
                       ${accueilActive ? "text-[#F6C90E] border-[#F6C90E]" : ""}`}
           style={{ ["--btn-shadow-rgb"]: "246,201,14" }}
@@ -49,7 +41,7 @@ export default function NavDesktop({
           Accueil
         </a>
 
-        {/* Services — soulignement + hover jaune */}
+        {/* Services */}
         <div
           className="relative"
           onMouseEnter={openServices}
@@ -60,7 +52,7 @@ export default function NavDesktop({
           <a
             href="#prestations"
             onClick={handleServices}
-            className={`inline-flex items-center gap-1 px-1 py-2 font-medium border-b-2 transition-colors duration-300
+            className={`inline-flex items-center gap-1 px-3 py-3.5 font-medium border-b-2 transition-colors duration-300
                         text-neutral-900 border-transparent hover:text-[#F6C90E] hover:border-[#F6C90E]
                         ${servicesActive ? "text-[#F6C90E] border-[#F6C90E]" : ""}`}
             aria-haspopup="true"
@@ -81,7 +73,7 @@ export default function NavDesktop({
           {servicesHoverOpen && (
             <div
               className="absolute left-1/2 -translate-x-1/2 top-full mt-2 z-[60]
-                         min-w-[260px] overflow-hidden bg-white text-neutral-900
+                         min-w-[280px] overflow-hidden bg-white text-neutral-900
                          border border-neutral-200 shadow-[0_10px_30px_-10px_rgba(0,0,0,0.25)]
                          ring-1 ring-black/5 rounded-none"
               role="menu"
@@ -90,84 +82,76 @@ export default function NavDesktop({
               <span className="absolute -top-1 left-1/2 -translate-x-1/2 block w-3 h-3 rotate-45 bg-white border-l border-t border-neutral-200" />
               <ul className="py-2">
                 {servicesLoading && (
-                  <li className="px-4 py-3 text-[15px] text-neutral-500">
+                  <li className="px-4 py-3 text-[16px] text-neutral-500">
                     Chargement…
                   </li>
                 )}
 
-                {!servicesLoading && hasItems && SERVICES_ITEMS.map((it) => (
-                  <li key={it.href}>
-                    <Link
-                      to={it.href}
-                      role="menuitem"
-                      onClick={() => scheduleCloseServices()}
-                      className="group flex items-start gap-3 px-4 py-3 text-[15px] leading-snug hover:bg-neutral-50 focus:bg-neutral-50 outline-none"
-                    >
-                      <span className="h-5 w-[3px] bg-transparent group-hover:bg-[#F6C90E] mt-[2px]" />
-                      <span className="text-neutral-900">{it.label}</span>
-                    </Link>
-                  </li>
-                ))}
+                {!servicesLoading &&
+                  hasItems &&
+                  SERVICES_ITEMS.map((it) => (
+                    <li key={it.href}>
+                      <Link
+                        to={it.href}
+                        role="menuitem"
+                        onClick={() => scheduleCloseServices()}
+                        className="group flex items-start gap-3 px-5 py-3 text-[16px] leading-snug hover:bg-neutral-50 focus:bg-neutral-50 outline-none"
+                      >
+                        <span className="h-5 w-[3px] bg-transparent group-hover:bg-[#F6C90E] mt-[2px]" />
+                        <span className="text-neutral-900">{it.label}</span>
+                      </Link>
+                    </li>
+                  ))}
 
                 {!servicesLoading && !hasItems && (
-                  <li className="px-4 py-3 text-[15px] text-neutral-500">
-                    {servicesError ? "Indisponible pour le moment" : "Bientôt disponible"}
+                  <li className="px-4 py-3 text-[16px] text-neutral-500">
+                    {servicesError
+                      ? "Indisponible pour le moment"
+                      : "Bientôt disponible"}
                   </li>
                 )}
               </ul>
             </div>
           )}
         </div>
+      </div>
 
-        {/* Infos utiles — contour noir + hover jaune */}
+      {/* === Espace flexible central === */}
+      <div className="flex-1" />
+
+      {/* === Zone droite : boutons === */}
+      <div className="flex items-center gap-5 xl:gap-7">
+        {/* Infos utiles */}
         <button
           onClick={() => setInfoOpen(true)}
-          className="inline-flex items-center gap-2
+          className="inline-flex items-center gap-3
                      bg-white text-neutral-900 border border-neutral-900
-                     px-4 py-2 font-medium transition hover:bg-[#F6C90E]
-                     rounded-none btn-halo"
+                     px-5 py-3 font-semibold transition hover:bg-[#F6C90E]
+                     rounded-none btn-halo text-[17px]"
           aria-haspopup="dialog"
           aria-expanded={infoOpen}
           aria-controls="infos-utiles-panel"
           title="Voir les informations utiles"
           style={{ ["--btn-shadow-rgb"]: "0,0,0" }}
         >
-          <IconAlert className="h-5 w-5" />
+          <IconAlert className="h-6 w-6" />
           Infos utiles
         </button>
 
-        {/* Contactez-nous — ROUGE plein comme avant */}
+        {/* Contactez-nous */}
         <button
           onClick={handleContact}
-          className="inline-flex items-center gap-2
-                     bg-[#D31920] px-4 py-2 font-semibold text-white
+          className="inline-flex items-center gap-3
+                     bg-[#D31920] px-5 py-3 font-semibold text-white text-[17px]
                      hover:brightness-95
                      rounded-none btn-halo"
           title="Contactez-nous"
           style={{ ["--btn-shadow-rgb"]: "211,25,32" }}
         >
-          <IconMail className="h-5 w-5" />
+          <IconMail className="h-6 w-6" />
           Contactez-nous
         </button>
-      </nav>
-
-      {/* Actions droite (desktop) */}
-      <div className="hidden md:flex items-center gap-3">
-        <button
-          onClick={toggleTheme}
-          className="ml-1 inline-flex h-9 w-9 items-center justify-center rounded-full
-                     bg-neutral-100 hover:bg-neutral-200 text-neutral-900
-                     focus:outline-none focus:ring-2 focus:ring-neutral-900"
-          aria-label="Changer le thème"
-          title="Changer le thème"
-        >
-          {theme === "dark" ? (
-            <IconSun className="h-5 w-5" />
-          ) : (
-            <IconMoon className="h-5 w-5" />
-          )}
-        </button>
       </div>
-    </>
+    </nav>
   );
 }

@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
+import { Link } from "react-router-dom";
 
 const fmt = new Intl.DateTimeFormat("fr-FR", {
   year: "numeric", month: "2-digit", day: "2-digit",
@@ -185,14 +186,22 @@ export default function AdminMessages() {
             </h1>
             <p className="text-sm text-zinc-400">Demandes reçues via le formulaire de contact.</p>
           </div>
-          <div className="flex gap-2">
-            <button
-              onClick={load}
-              className="px-4 h-10 border border-zinc-700 hover:bg-zinc-900 rounded"
-            >
-              Recharger
-            </button>
-          </div>
+          {/* Header buttons */}
+<div className="flex gap-2">
+  <Link
+    to="/admin"
+    className="btn-square inline-flex items-center justify-center px-4 h-10 border border-zinc-700 hover:bg-zinc-900 select-none cursor-pointer"
+  >
+    Retour
+  </Link>
+  <button
+    onClick={load}
+    className="btn-square px-4 h-10 border border-zinc-700 hover:bg-zinc-900 select-none cursor-pointer"
+  >
+    Recharger
+  </button>
+</div>
+
         </header>
 
         {/* Barre de filtres */}
@@ -218,7 +227,7 @@ export default function AdminMessages() {
 
           <input
             className="bg-zinc-900 border border-zinc-700 text-sm px-3 h-9 rounded w-64"
-            placeholder="Filtrer par type de travaux (slug)"
+            placeholder="Filtrer par type de travaux"
             value={filter.work}
             onChange={e => setFilter(f => ({ ...f, work: e.target.value }))}
           />
@@ -261,7 +270,7 @@ export default function AdminMessages() {
                               <div className="flex items-center gap-2">
                                 <div className="font-semibold truncate">{m.name}</div>
                                 {!m.is_read && (
-                                  <span className="text-[10px] font-bold uppercase tracking-wide bg-[#F6C90E] text-black px-1.5 py-0.5 rounded">
+                                  <span className="text-[10px] font-bold uppercase tracking-wide bg-[#F6C90E] text黑 px-1.5 py-0.5 rounded">
                                     Non lu
                                   </span>
                                 )}
@@ -375,7 +384,7 @@ export default function AdminMessages() {
                       <button
                         onClick={sendReply}
                         disabled={sending}
-                        className="px-4 h-10 font-semibold border border-[#F6C90E] text-[#F6C90E] rounded hover:bg-black disabled:opacity-60"
+                        className="px-4 h-10 font-semibold border border-[#F6C90E] text-[#F6C90E] rounded hover:bg黑 disabled:opacity-60"
                       >
                         {sending ? "Envoi…" : "Envoyer"}
                       </button>

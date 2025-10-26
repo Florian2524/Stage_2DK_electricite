@@ -202,11 +202,12 @@ export default function ServiceForm() {
             </p>
           </div>
           <div className="flex items-center gap-2">
+
             <Link
               to="/admin"
               className="btn-square inline-flex items-center justify-center px-4 h-11 font-semibold border border-zinc-600 hover:bg-zinc-900 transition-colors"
             >
-              Annuler
+              Retour
             </Link>
             <button
               type="submit"

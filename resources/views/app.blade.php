@@ -4,6 +4,11 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>2DK Électricité</title>
+
+  <!-- Favicon / Logo -->
+  <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('logo_3.png') }}">
+  <link rel="apple-touch-icon" href="{{ asset('logo_3.png') }}">
+
   @viteReactRefresh
   @vite('resources/js/app.jsx')
 </head>

@@ -1,15 +1,22 @@
 import React from "react";
 import Panel from "./ui/Panel";
+import {
+  TEL_DISPLAY,
+  TEL_LINK,
+  EMAIL_DISPLAY,
+  EMAIL_LINK,
+  SERVICE_AREA,
+} from "./header/constants";
 
 // Colonne gauche standardisée pour la page Contact
 export default function ContactAside({
   title = "Devis / Contact",
   subtitle = "Pour un devis, une question sur nos prestations ou toute autre demande, utilisez le formulaire ci-contre. Réponse rapide.",
-  telDisplay = "05 00 00 00 00",
-  telHref = "tel:0500000000",
-  emailDisplay = "contact@2dk.fr",
-  emailHref = "mailto:contact@2dk.fr",
-  zone = "Métropole de Bordeaux (CUB)",
+  telDisplay = TEL_DISPLAY,
+  telHref = TEL_LINK,
+  emailDisplay = EMAIL_DISPLAY,
+  emailHref = EMAIL_LINK,
+  zone = SERVICE_AREA,
 }) {
   return (
     <aside>
@@ -34,7 +41,7 @@ export default function ContactAside({
         <div className="font-semibold">2DK Électricité</div>
         <ul className="mt-3 space-y-2 text-sm text-zinc-300">
           <li>
-            Tél.{" "}
+            Tél:{" "}
             <a
               className="underline underline-offset-2 hover:text-[#F6C90E] transition"
               href={telHref}
@@ -43,7 +50,7 @@ export default function ContactAside({
             </a>
           </li>
           <li>
-            Email{" "}
+            Email:{" "}
             <a
               className="underline underline-offset-2 hover:text-[#F6C90E] transition"
               href={emailHref}

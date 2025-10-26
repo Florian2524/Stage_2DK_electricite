@@ -1,13 +1,11 @@
 import React, { useEffect } from "react";
 import { Link } from "react-router-dom";
+import {
+  TEL_DISPLAY,
+  EMAIL_DISPLAY,
+  ADDRESS_DISPLAY,
+} from "../components/header/constants";
 
-/**
- * Mentions Légales — 2DK Électricité
- * Palette (déjà en place dans le projet) :
- * - Fond : #0B0B0B / #18181B
- * - Accent : #F6C90E
- * - Texte : gris clair
- */
 export default function MentionsLegales() {
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -68,7 +66,6 @@ export default function MentionsLegales() {
                                  hover:brightness-95 active:translate-y-[1px] transition-all shadow-sm hover:shadow-md btn-square"
                       style={{ ["--accent"]: ACCENT }}
                     >
-                      {/* icône téléphone/enveloppe minimaliste */}
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
                         aria-hidden="true"
@@ -132,7 +129,6 @@ export default function MentionsLegales() {
                     </div>
                   </section>
 
-                  {/* Divider */}
                   <hr className="my-8 border-zinc-800" />
 
                   {/* Section — RGPD */}
@@ -164,11 +160,9 @@ export default function MentionsLegales() {
                         </li>
                       </ul>
                       <p>
-                        Pour exercer vos droits, contactez&nbsp;:
-                        <br />
-                        <span className="font-semibold">dpo@2dk.fr</span> ou{" "}
-                        <span className="font-semibold">contact@2dk.fr</span>, ou par
-                        courrier à l’adresse du siège social indiquée ci-dessous.
+                        Pour exercer vos droits, contactez-nous par e-mail à{" "}
+                        <span className="font-semibold">{EMAIL_DISPLAY}</span>{" "}
+                        ou par courrier à l’adresse du siège social indiquée ci-dessous.
                       </p>
                     </div>
                   </section>
@@ -184,10 +178,10 @@ export default function MentionsLegales() {
                       <p>
                         Le site peut utiliser des cookies techniques nécessaires
                         au fonctionnement et, le cas échéant, des cookies de
-                        mesure d’audience (ex. Google Analytics). Lors de votre
-                        première visite, un bandeau d’information permet de gérer
-                        vos préférences. Vous pouvez également désactiver les
-                        cookies depuis les paramètres de votre navigateur.
+                        mesure d’audience. Lors de votre première visite, un
+                        bandeau d’information permet de gérer vos préférences.
+                        Vous pouvez également désactiver les cookies depuis les
+                        paramètres de votre navigateur.
                       </p>
                     </div>
                   </section>
@@ -238,6 +232,7 @@ export default function MentionsLegales() {
                           <dt className="text-zinc-400">Dénomination</dt>
                           <dd className="font-medium text-white">2DK Électricité</dd>
                         </div>
+                        {/* Forme juridique laissée telle quelle en attendant confirmation */}
                         <div>
                           <dt className="text-zinc-400">Forme juridique</dt>
                           <dd className="font-medium text-white">SASU</dd>
@@ -245,34 +240,31 @@ export default function MentionsLegales() {
                         <div>
                           <dt className="text-zinc-400">Siège social</dt>
                           <dd className="font-medium text-white">
-                            12 rue des Artisans, 33000 Bordeaux, France
+                            {ADDRESS_DISPLAY}
                           </dd>
                         </div>
                         <div>
                           <dt className="text-zinc-400">Téléphone</dt>
-                          <dd className="font-medium text-white">05 55 12 34 56</dd>
+                          <dd className="font-medium text-white">{TEL_DISPLAY}</dd>
                         </div>
                       </dl>
                       <dl className="space-y-2">
                         <div>
                           <dt className="text-zinc-400">E-mail</dt>
-                          <dd className="font-medium text-white">contact@2dk.fr</dd>
+                          <dd className="font-medium text-white">{EMAIL_DISPLAY}</dd>
                         </div>
+                        {/* SIRET/TVA/RCS en attente — remplace dès que tu me fournis les numéros */}
                         <div>
                           <dt className="text-zinc-400">SIRET</dt>
-                          <dd className="font-medium text-white">
-                            123 456 789 00012
-                          </dd>
+                          <dd className="font-medium text-white">—</dd>
                         </div>
                         <div>
                           <dt className="text-zinc-400">TVA intracommunautaire</dt>
-                          <dd className="font-medium text-white">FR12 345678901</dd>
+                          <dd className="font-medium text-white">—</dd>
                         </div>
                         <div>
                           <dt className="text-zinc-400">RCS (optionnel)</dt>
-                          <dd className="font-medium text-white">
-                            RCS Bordeaux — B 123 456 789
-                          </dd>
+                          <dd className="font-medium text-white">—</dd>
                         </div>
                       </dl>
                     </div>
@@ -286,7 +278,8 @@ export default function MentionsLegales() {
                       Directeur de la publication
                     </h2>
                     <p className="mt-4 text-zinc-300">
-                      M. Jean Dupont
+                      {/* Remplacer par l’identité exacte quand tu me la donnes */}
+                      Responsable légal de 2DK Électricité
                     </p>
                   </section>
 

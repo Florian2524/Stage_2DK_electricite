@@ -18,7 +18,7 @@ function pickImageByKey(s = "") {
   return null;
 }
 
-/* ---------- Mini parser Markdown (gras + listes) ---------- */
+/* ---------- Mini parser Markdown (gras + listes + paragraphes) ---------- */
 function escapeHtml(str) {
   return String(str).replace(/[&<>"']/g, (c) => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c]));
 }
@@ -43,8 +43,8 @@ function mdToHtml(md = "") {
       if (pbuf.length) flushP();
       if (!inList) {
         inList = true;
-        // puces jaunes & espacement comme ancienne maquette
-        out.push(`<ul class="list-disc pl-6 md:pl-7 mb-6 marker:text-[#F6C90E] space-y-3">`);
+        // Puces JAUNES comme ta maquette
+        out.push(`<ul class="list-disc pl-6 md:pl-7 mb-6 space-y-2 marker:text-[#F6C90E]">`);
       }
       const item = escapeHtml(m[1]).replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
       out.push(`<li>${item}</li>`);
@@ -61,8 +61,7 @@ function mdToHtml(md = "") {
   flushP();
   return out.join("\n");
 }
-
-/* ========================================================= */
+/* ===================================================================== */
 
 export default function ServiceDetail() {
   const { slug } = useParams();
@@ -130,30 +129,60 @@ export default function ServiceDetail() {
   const htmlMd = mdToHtml(data.content_md || "");
   const bodyFallback = data.content ? String(data.content) : "";
 
+  // Permet les retours à la ligne dans le H2
+  const renderRightTitle = (t) =>
+    String(t).split(/\n+/).map((chunk, i) => (
+      <React.Fragment key={i}>
+        {i > 0 && <br />}
+        {chunk}
+      </React.Fragment>
+    ));
+
   return (
     <main className="bg-[#0B0B0B] text-zinc-200">
-      <section className="max-w-7xl mx-auto px-6 md:px-10 xl:px-16 py-10 md:py-12">
-        {/* H1 + lead */}
-        <h1 className="text-[40px] md:text-[56px] font-extrabold leading-tight text-[#F6C90E]">
-          {title} à Bordeaux Métropole (CUB)
-        </h1>
+      {/* not-prose coupe l'effet d'une éventuelle classe .prose */}
+      <section className="not-prose max-w-7xl mx-auto px-6 md:px-10 xl:px-16 py-10 md:py-12">
+        {/* ===== Titre + sous-titre (compact, espacement réduit) ===== */}
+{/* ===== Titre + sous-titre (marge basse réduite davantage) ===== */}
+<div className="mt-0 mb-0"> {/* marge quasi nulle dessous */}
+  <h1
+    className="font-extrabold text-[#F6C90E]"
+    style={{
+      fontSize: "clamp(32px, 3.2vw, 42px)",
+      lineHeight: 1.1,
+      margin: 0,
+    }}
+  >
+    {title} à Bordeaux Métropole (CUB)
+  </h1>
 
-        {!!lead && (
-          <p className="mt-2 text-base md:text-lg leading-relaxed text-zinc-400 max-w-3xl">
-            {lead}
-          </p>
-        )}
+  {!!lead && (
+    <p
+      className="mt-4 text-zinc-400" // on garde l’espacement agréable sous le titre
+      style={{
+        fontSize: "clamp(15px, 1vw, 17px)",
+        maxWidth: "68rem",
+      }}
+    >
+      {lead}
+    </p>
+  )}
+</div>
 
-        {/* Deux colonnes */}
-        <div className="mt-8 md:mt-10 grid md:grid-cols-12 gap-8">
-          {/* Image */}
+
+        {/* ===== 2 colonnes : image gauche / texte droite ===== */}
+<div className="mt-10 md:mt-12 lg:mt-14 grid md:grid-cols-12 gap-8 items-start">
+
+          {/* Image large à gauche */}
           <div className="md:col-span-7">
-            <div className="bg-black ring-1 ring-black/30">
+            <div className="bg-black/30">
               {imgSrc ? (
                 <img
                   src={imgSrc}
                   alt={title}
-                  className="w-full h-auto object-cover"
+                  className="w-full h-auto block"
+                  loading="lazy"
+                  decoding="async"
                 />
               ) : (
                 <div className="aspect-[4/3] bg-zinc-800" />
@@ -161,39 +190,63 @@ export default function ServiceDetail() {
             </div>
           </div>
 
-          {/* Contenu droite */}
-          <div className="md:col-span-5">
+          {/* Texte à droite (aligné en haut) */}
+          <div className="md:col-span-5 self-start">
             {!!rightTitle && (
-              <h2 className="text-[28px] md:text-[36px] font-extrabold leading-tight text-[#F6C90E]">
-                {rightTitle}
+              <h2
+                className="text-[#F6C90E] font-extrabold"
+                style={{
+                  fontSize: "clamp(28px, 3vw, 40px)",
+                  lineHeight: 1.15,
+                  marginTop: 0,
+                  maxWidth: "22ch",
+                }}
+              >
+                {renderRightTitle(rightTitle)}
               </h2>
             )}
 
             {htmlMd ? (
               <div
-                className="mt-4 text-[17px] leading-relaxed text-zinc-200"
+                className="mt-4 text-zinc-100"
+                style={{ fontSize: "clamp(16px, 1.15vw, 17px)", lineHeight: 1.6 }}
                 dangerouslySetInnerHTML={{ __html: htmlMd }}
               />
             ) : bodyFallback ? (
-              <p className="mt-4 text-[17px] leading-relaxed text-zinc-200">
+              <p
+                className="mt-4 text-zinc-100"
+                style={{ fontSize: "clamp(16px, 1.15vw, 17px)", lineHeight: 1.6 }}
+              >
                 {bodyFallback}
               </p>
             ) : null}
 
+            {/* CTA rouge */}
             <Link
               to="/contact"
-              className="inline-block mt-6 px-7 py-3.5 bg-[#D31920] text-white font-semibold hover:brightness-95 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#D31920] focus-visible:ring-offset-[#0B0B0B] transition"
+              className="inline-flex items-center justify-center gap-3 mt-6 bg-[#D31920] text-white font-semibold rounded-none hover:brightness-95 btn-halo"
+              style={{
+                padding: "16px 28px", // ~px-7 py-4
+                ["--btn-shadow-rgb"]: "211,25,32",
+              }}
             >
               Contactez-nous
             </Link>
           </div>
         </div>
 
-        {/* Note bas de page */}
+        {/* ===== Bandeau bas : filet jaune à gauche ===== */}
         {!!data.bottom_note && (
-          <div className="mt-10 md:mt-12 flex items-start gap-4">
-            <span className="mt-1 inline-block h-6 w-1.5 bg-[#F6C90E]" />
-            <p className="text-lg text-zinc-200">{data.bottom_note}</p>
+          <div className="mt-10 md:mt-12">
+            <div className="flex items-start gap-3">
+              <span className="mt-[6px] block h-6 md:h-7 w-[4px] bg-[#F6C90E]" />
+              <p
+                className="text-zinc-100"
+                style={{ fontSize: "clamp(16px, 1.2vw, 18px)" }}
+              >
+                {data.bottom_note}
+              </p>
+            </div>
           </div>
         )}
       </section>

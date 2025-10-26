@@ -20,15 +20,12 @@ import {
 
 import { fetchActiveServices, mapToMenuItems } from "../lib/servicesClient";
 import { IconPhone, IconMenu } from "./header/Icons";
-import { useTheme, useEscapeToClose, copyToClipboard } from "./header/hooks";
+import { useEscapeToClose, copyToClipboard } from "./header/hooks";
 import NavDesktop from "./header/NavDesktop";
 import MobileDrawer from "./header/MobileDrawer";
 import InfoPanel from "./header/InfoPanel";
 
 export default function Header() {
-  // Thème
-  const { theme, toggleTheme } = useTheme();
-
   // États
   const [isShrunk, setIsShrunk] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -196,7 +193,7 @@ export default function Header() {
 
   return (
     <header
-      className="sticky top-0 z-50 transition-all duration-200 bg-white dark:bg-white"
+      className="sticky top-0 z-50 transition-all duration-200 bg-white"
       aria-label="En-tête du site"
     >
       <div className={`${isShrunk ? "py-2" : "py-3"}`}>
@@ -234,8 +231,6 @@ export default function Header() {
               infoOpen={infoOpen}
               setInfoOpen={setInfoOpen}
               CTA_URL={CTA_URL}
-              theme={theme}
-              toggleTheme={toggleTheme}
               servicesLoading={servicesItems === null}
               servicesError={servicesError}
             />
