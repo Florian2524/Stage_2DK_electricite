@@ -33,7 +33,6 @@ export default function Header() {
   const [isShrunk, setIsShrunk] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [infoOpen, setInfoOpen] = useState(false);
-  const [query, setQuery] = useState("");
   const [servicesHoverOpen, setServicesHoverOpen] = useState(false);
 
   // 🔥 Services dynamiques (menu)
@@ -235,8 +234,6 @@ export default function Header() {
               infoOpen={infoOpen}
               setInfoOpen={setInfoOpen}
               CTA_URL={CTA_URL}
-              query={query}
-              setQuery={setQuery}
               theme={theme}
               toggleTheme={toggleTheme}
               servicesLoading={servicesItems === null}

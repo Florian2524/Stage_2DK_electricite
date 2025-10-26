@@ -10,11 +10,6 @@ export const IconMail = (p) => (
     <path strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" d="M3 8l9 6 9-6M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
   </svg>
 );
-export const IconSearch = (p) => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" {...p}>
-    <path strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" d="M21 21l-4.35-4.35M11 18a7 7 0 100-14 7 7 0 000 14z"/>
-  </svg>
-);
 export const IconMenu = (p) => (
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" {...p}>
     <path strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16"/>

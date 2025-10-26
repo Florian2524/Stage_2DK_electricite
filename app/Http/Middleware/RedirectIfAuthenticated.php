@@ -9,9 +9,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 class RedirectIfAuthenticated
 {
-    /**
-     * Si l'utilisateur est déjà connecté, redirige-le ailleurs.
-     */
+    
     public function handle(Request $request, Closure $next, ...$guards): Response
     {
         foreach ($guards as $guard) {

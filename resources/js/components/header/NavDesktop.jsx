@@ -3,7 +3,6 @@ import { Link } from "react-router-dom";
 import {
   IconAlert,
   IconMail,
-  IconSearch,
   IconSun,
   IconMoon,
 } from "./Icons";
@@ -22,8 +21,6 @@ export default function NavDesktop({
   infoOpen,
   setInfoOpen,
   CTA_URL,
-  query,
-  setQuery,
   theme,
   toggleTheme,
   // ↓ nouveaux (facultatifs)
@@ -156,24 +153,6 @@ export default function NavDesktop({
 
       {/* Actions droite (desktop) */}
       <div className="hidden md:flex items-center gap-3">
-        <form
-          onSubmit={(e) => e.preventDefault()}
-          className="relative"
-          role="search"
-          aria-label="Recherche sur le site"
-        >
-          <IconSearch className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-neutral-500" />
-          <input
-            type="search"
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            placeholder="Rechercher…"
-            className="w-40 focus:w-64 transition-[width] duration-200
-                       rounded-full bg-neutral-100 text-neutral-900 placeholder-neutral-500
-                       pl-9 pr-3 py-2 outline-none focus:ring-2 focus:ring-[#F6C90E]"
-          />
-        </form>
-
         <button
           onClick={toggleTheme}
           className="ml-1 inline-flex h-9 w-9 items-center justify-center rounded-full

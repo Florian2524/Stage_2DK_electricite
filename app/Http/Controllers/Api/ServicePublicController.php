@@ -85,9 +85,9 @@ class ServicePublicController extends Controller
             'bottom_note'      => $s->bottom_note ?? null,
 
             // Images
-            'image_url'        => $imagePathUrl ?: ($s->image_url ?? null), // ✅ front peut consommer directement
-            'image_path'       => $s->image_path ?? null,                    // info brute
-            'image_path_url'   => $imagePathUrl,                             // url(storage) explicite si tu préfères
+            'image_url'        => $imagePathUrl ?: ($s->image_url ?? null), 
+            'image_path'       => $s->image_path ?? null,                    
+            'image_path_url'   => $imagePathUrl,                             
         ];
     }
 
