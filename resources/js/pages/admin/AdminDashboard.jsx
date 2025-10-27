@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import api from "../lib/api";
-import { useAuth } from "../components/AuthProvider";
-import ConfirmDialog from "../components/ConfirmDialog";
-import Toast from "../components/Toast";
+import api from "../../lib/api";
+import { useAuth } from "../../components/AuthProvider";
+import ConfirmDialog from "../../components/ConfirmDialog";
+import Toast from "../../components/Toast";
 
 export default function AdminDashboard() {
   const [services, setServices] = useState([]);

@@ -1,13 +1,13 @@
-// resources/js/services/ServiceDetail.jsx
+// resources/js/pages/public/ServiceDetail.jsx
 import React, { useEffect, useMemo, useState } from "react";
 import { useParams, Link } from "react-router-dom";
-import api from "../lib/api";
+import api from "../../lib/api";
 
 // Fallbacks locaux si aucune image n'est fournie
-import srvInstall from "../../images/services/installation.jpg";
-import srvNormes from "../../images/services/mise-aux-normes.jpg";
-import srvRenov from "../../images/services/renovation.jpg";
-import srvDepan from "../../images/services/depannage.jpg";
+import srvInstall from "../../../images/services/installation.jpg";
+import srvNormes from "../../../images/services/mise-aux-normes.jpg";
+import srvRenov from "../../../images/services/renovation.jpg";
+import srvDepan from "../../../images/services/depannage.jpg";
 
 function pickImageByKey(s = "") {
   const n = String(s || "").toLowerCase();
@@ -143,36 +143,34 @@ export default function ServiceDetail() {
       {/* not-prose coupe l'effet d'une éventuelle classe .prose */}
       <section className="not-prose max-w-7xl mx-auto px-6 md:px-10 xl:px-16 py-10 md:py-12">
         {/* ===== Titre + sous-titre (compact, espacement réduit) ===== */}
-{/* ===== Titre + sous-titre (marge basse réduite davantage) ===== */}
-<div className="mt-0 mb-0"> {/* marge quasi nulle dessous */}
-  <h1
-    className="font-extrabold text-[#F6C90E]"
-    style={{
-      fontSize: "clamp(32px, 3.2vw, 42px)",
-      lineHeight: 1.1,
-      margin: 0,
-    }}
-  >
-    {title} à Bordeaux Métropole (CUB)
-  </h1>
+        {/* ===== Titre + sous-titre (marge basse réduite davantage) ===== */}
+        <div className="mt-0 mb-0">
+          <h1
+            className="font-extrabold text-[#F6C90E]"
+            style={{
+              fontSize: "clamp(32px, 3.2vw, 42px)",
+              lineHeight: 1.1,
+              margin: 0,
+            }}
+          >
+            {title} à Bordeaux Métropole (CUB)
+          </h1>
 
-  {!!lead && (
-    <p
-      className="mt-4 text-zinc-400" // on garde l’espacement agréable sous le titre
-      style={{
-        fontSize: "clamp(15px, 1vw, 17px)",
-        maxWidth: "68rem",
-      }}
-    >
-      {lead}
-    </p>
-  )}
-</div>
-
+          {!!lead && (
+            <p
+              className="mt-4 text-zinc-400"
+              style={{
+                fontSize: "clamp(15px, 1vw, 17px)",
+                maxWidth: "68rem",
+              }}
+            >
+              {lead}
+            </p>
+          )}
+        </div>
 
         {/* ===== 2 colonnes : image gauche / texte droite ===== */}
-<div className="mt-10 md:mt-12 lg:mt-14 grid md:grid-cols-12 gap-8 items-start">
-
+        <div className="mt-10 md:mt-12 lg:mt-14 grid md:grid-cols-12 gap-8 items-start">
           {/* Image large à gauche */}
           <div className="md:col-span-7">
             <div className="bg-black/30">
@@ -226,7 +224,7 @@ export default function ServiceDetail() {
               to="/contact"
               className="inline-flex items-center justify-center gap-3 mt-6 bg-[#D31920] text-white font-semibold rounded-none hover:brightness-95 btn-halo"
               style={{
-                padding: "16px 28px", // ~px-7 py-4
+                padding: "16px 28px",
                 ["--btn-shadow-rgb"]: "211,25,32",
               }}
             >

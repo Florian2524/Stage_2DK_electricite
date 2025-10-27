@@ -1,10 +1,12 @@
+// resources/js/pages/public/MentionsLegales.jsx
+// à renommer en LegalNotice.jsx par la suite pour respecter le nommage en anglais(et modifier les imports)
 import React, { useEffect } from "react";
 import { Link } from "react-router-dom";
 import {
   TEL_DISPLAY,
   EMAIL_DISPLAY,
   ADDRESS_DISPLAY,
-} from "../components/header/constants";
+} from "../../components/header/constants";
 
 export default function MentionsLegales() {
   useEffect(() => {

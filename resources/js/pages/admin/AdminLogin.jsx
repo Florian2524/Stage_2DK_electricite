@@ -1,8 +1,8 @@
 // resources/js/pages/AdminLogin.jsx
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { useAuth } from "../components/AuthProvider";
-import api from "../lib/api";
+import { useAuth } from "../../components/AuthProvider";
+import api from "../../lib/api";
 
 export default function AdminLogin() {
   const navigate = useNavigate();

@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
-import ContactAside from "./ContactAside";
-import Panel from "./ui/Panel";
-import Field from "./form/Field";
-import { validateContact } from "../utils/validateContact";
-import { SERVICES_ITEMS } from "./header/constants";
-import api from "../lib/api";
+import ContactAside from "../../components/ContactAside";
+import Panel from "../../components/ui/Panel";
+import Field from "../../components/form/Field";
+import { validateContact } from "../../utils/validateContact";
+import { SERVICES_ITEMS } from "../../components/header/constants";
+import api from "../../lib/api";
 
 // Génère les options "travaux" depuis le menu Services
 const SERVICE_OPTIONS = (SERVICES_ITEMS || [])

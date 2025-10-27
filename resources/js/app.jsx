@@ -6,21 +6,21 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 import Header from "./components/Header";
 import ScrollToTop from "./components/ScrollToTop";
-import Home from "./components/Home";
-import Contact from "./components/Contact";
-import MentionsLegales from "./components/MentionsLegales";
 import Footer from "./components/Footer";
 
+// Pages publiques
+import Home from "./pages/public/Home";
+import Contact from "./pages/public/Contact";
+import MentionsLegales from "./pages/public/MentionsLegales";
+import ServiceDetail from "./pages/public/ServiceDetail";
+
+// Admin
 import AuthProvider from "./components/AuthProvider";
 import ProtectedRoute from "./components/ProtectedRoute";
-import AdminLogin from "./pages/AdminLogin";
-import AdminDashboard from "./pages/AdminDashboard";
-import ServiceForm from "./pages/ServiceForm";
-
-import ServiceDetail from "./services/ServiceDetail";
-
-// ⬇️ AJOUT
-import AdminMessages from "./pages/AdminMessages";
+import AdminLogin from "./pages/admin/AdminLogin";
+import AdminDashboard from "./pages/admin/AdminDashboard";
+import ServiceForm from "./pages/admin/ServiceForm";
+import AdminMessages from "./pages/admin/AdminMessages";
 
 function NotFound() {
   return (
@@ -78,7 +78,6 @@ function App() {
               </ProtectedRoute>
             }
           />
-          {/* Messages admin */}
           <Route
             path="/admin/messages"
             element={

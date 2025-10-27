@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import logoUrl from "../../images/logo_3.png";
+import logoUrl from "../../images/logo.png";
 
 import {
   CTA_URL,

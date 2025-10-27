@@ -1,7 +1,7 @@
 // resources/js/pages/ServiceForm.jsx
 import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams, Link } from "react-router-dom";
-import api from "../lib/api";
+import api from "../../lib/api";
 
 export default function ServiceForm() {
   const { id } = useParams();

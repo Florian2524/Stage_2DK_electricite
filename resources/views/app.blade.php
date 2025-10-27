@@ -6,8 +6,8 @@
   <title>2DK Électricité</title>
 
   <!-- Favicon / Logo -->
-  <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('logo_3.png') }}">
-  <link rel="apple-touch-icon" href="{{ asset('logo_3.png') }}">
+  <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('favicon.png') }}">
+  <link rel="apple-touch-icon" href="{{ asset('favicon.png') }}">
 
   @viteReactRefresh
   @vite('resources/js/app.jsx')
