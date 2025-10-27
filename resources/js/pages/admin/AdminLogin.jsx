@@ -1,4 +1,4 @@
-// resources/js/pages/AdminLogin.jsx
+// resources/js/pages/admin/AdminLogin.jsx
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../../components/AuthProvider";
@@ -9,8 +9,9 @@ export default function AdminLogin() {
   const location = useLocation();
   const { user, loading, error, login } = useAuth();
 
-  const [email, setEmail] = useState("florian.souquere.dev@gmail.com");
-  const [password, setPassword] = useState("password");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [remember, setRemember] = useState(false); // case "Se souvenir de moi"
   const [submitting, setSubmitting] = useState(false);
   const [localError, setLocalError] = useState("");
   const from = location.state?.from?.pathname || "/admin";
@@ -31,7 +32,8 @@ export default function AdminLogin() {
     setLocalError("");
     setSubmitting(true);
     try {
-      const res = await login({ email, password });
+      // On passe remember au provider (qui le transmettra à l'API)
+      const res = await login({ email, password, remember });
       if (res?.ok) {
         navigate(from, { replace: true });
       } else {
@@ -62,7 +64,7 @@ export default function AdminLogin() {
               className="w-full h-12 px-4 bg-zinc-900 border border-zinc-700 text-zinc-100 outline-none focus:border-zinc-500"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              autoComplete="email"
+              autoComplete="username"
               required
             />
           </div>
@@ -79,6 +81,19 @@ export default function AdminLogin() {
               autoComplete="current-password"
               required
             />
+          </div>
+
+          {/* Se souvenir de moi (au-dessus du bouton, avec espace) */}
+          <div className="mt-2 mb-4">
+            <label htmlFor="remember" className="inline-flex items-center gap-2 text-sm select-none">
+              <input
+                id="remember"
+                type="checkbox"
+                checked={remember}
+                onChange={(e) => setRemember(e.target.checked)}
+              />
+              Se souvenir de moi
+            </label>
           </div>
 
           {(localError || error) && (

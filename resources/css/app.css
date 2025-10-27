@@ -91,3 +91,24 @@
 #contact-form label {
   border-radius: 0 !important;
 }
+
+/* Neutralise le fond clair de l'autofill (Chrome/Edge/Safari) */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+textarea:-webkit-autofill,
+select:-webkit-autofill {
+  -webkit-text-fill-color: #e4e4e7;           /* texte clair */
+  caret-color: #e4e4e7;
+  -webkit-box-shadow: 0 0 0 1000px #18181B inset; /* même fond que les inputs (bg-zinc-900) */
+  box-shadow: 0 0 0 1000px #18181B inset;
+  transition: background-color 9999s ease-out;    /* hack pour éviter le flash */
+}
+
+/* Firefox */
+input:-moz-autofill,
+textarea:-moz-autofill,
+select:-moz-autofill {
+  box-shadow: 0 0 0 1000px #18181B inset;
+  -moz-text-fill-color: #e4e4e7;
+}

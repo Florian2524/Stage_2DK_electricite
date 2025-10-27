@@ -17,14 +17,17 @@ class AuthController extends Controller
             'password' => ['required'],
         ]);
 
+        // "Se souvenir de moi" optionnel (case côté front)
+        $remember = $request->boolean('remember', false);
+
         // Tentative de connexion (guard "web", session)
-        if (! Auth::attempt($credentials, remember: true)) {
+        if (! Auth::attempt($credentials, $remember)) {
             throw ValidationException::withMessages([
                 'email' => 'Identifiants invalides.',
             ]);
         }
 
-        // Regénère l’ID de session pour la sécurité
+        // Regénère l’ID de session pour la sécurité (session fixation)
         $request->session()->regenerate();
 
         // Réponse OK (le cookie "laravel_session" est posé automatiquement)
@@ -36,6 +39,7 @@ class AuthController extends Controller
     {
         Auth::guard('web')->logout();
 
+        // Invalide la session en cours et régénère le token CSRF
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 

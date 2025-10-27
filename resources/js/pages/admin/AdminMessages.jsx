@@ -270,9 +270,11 @@ export default function AdminMessages() {
                               <div className="flex items-center gap-2">
                                 <div className="font-semibold truncate">{m.name}</div>
                                 {!m.is_read && (
-                                  <span className="text-[10px] font-bold uppercase tracking-wide bg-[#F6C90E] text黑 px-1.5 py-0.5 rounded">
-                                    Non lu
-                                  </span>
+                                  <span className="text-[10px] font-bold uppercase tracking-wide bg-[#F6C90E] text-black px-1.5 py-0.5 rounded border border-black/10">
+  Non lu
+</span>
+
+
                                 )}
                               </div>
                               <div className="text-sm text-zinc-300 truncate">
@@ -384,7 +386,7 @@ export default function AdminMessages() {
                       <button
                         onClick={sendReply}
                         disabled={sending}
-                        className="px-4 h-10 font-semibold border border-[#F6C90E] text-[#F6C90E] rounded hover:bg黑 disabled:opacity-60"
+                        className="btn-square px-4 h-10 font-semibold border border-[#F6C90E] text-[#F6C90E] hover:bg-black disabled:opacity-60"
                       >
                         {sending ? "Envoi…" : "Envoyer"}
                       </button>
