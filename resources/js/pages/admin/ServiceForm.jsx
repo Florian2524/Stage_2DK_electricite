@@ -14,7 +14,7 @@ export default function ServiceForm() {
     is_active: true,
     position: 0,
     description: "",
-    lead: "", // ✅ nouveau champ
+    lead: "",
     content_heading: "",
     content_md: "",
     bottom_note: "",
@@ -74,6 +74,23 @@ export default function ServiceForm() {
     setField(name, v);
   }
 
+  /* ========= UPLOAD ciblé (réutilisé par le submit) ========= */
+  async function uploadImageFor(serviceId) {
+    const fd = new FormData();
+    fd.append("file", imageFile);
+    const res = await api.post(`/api/admin/services/${serviceId}/image`, fd, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
+    setForm((f) => ({
+      ...f,
+      image_path: res.image_path ?? null,
+      image_path_url: res.image_url ?? null,
+    }));
+    setImageFile(null);
+    setImagePreview("");
+  }
+
+  /* ================== SUBMIT “tout-en-un” ================== */
   async function onSubmit(e) {
     e.preventDefault();
     setErr("");
@@ -91,27 +108,46 @@ export default function ServiceForm() {
         is_active: !!form.is_active,
         position: Number.isFinite(+form.position) ? +form.position : 0,
         description: form.description || "",
-        lead: form.lead || "", // ✅ champ ajouté
+        lead: form.lead || "",
         content_heading: form.content_heading || null,
         content_md: form.content_md || null,
         bottom_note: form.bottom_note || null,
         image_url: form.image_url || null,
       };
 
+      let serviceId = id;
+
       if (isEdit) {
         await api.put(`/api/admin/services/${id}`, payload);
       } else {
-        await api.post("/api/admin/services", payload);
+        // Création → on récupère l’ID retourné par l’API
+        const created = await api.post("/api/admin/services", payload);
+        serviceId = created?.id ?? created?.data?.id;
+        if (!serviceId) {
+          throw new Error("ID du service introuvable après création.");
+        }
+      }
+
+      // Si un fichier est sélectionné, on l’envoie maintenant
+      if (imageFile) {
+        await uploadImageFor(serviceId);
       }
 
       navigate("/admin", {
         replace: true,
-        state: { flash: { success: isEdit ? "Service mis à jour." : "Service créé." } },
+        state: {
+          flash: {
+            success: isEdit
+              ? (imageFile ? "Service mis à jour + image envoyée." : "Service mis à jour.")
+              : (imageFile ? "Service créé + image envoyée." : "Service créé."),
+          },
+        },
       });
     } catch (e2) {
       const msg =
         e2?.data?.message ||
         (typeof e2?.data === "string" ? e2.data : null) ||
+        e2?.message ||
         "Échec de l’enregistrement.";
       setErr(msg);
     } finally {
@@ -119,7 +155,7 @@ export default function ServiceForm() {
     }
   }
 
-  /* ================== UPLOAD IMAGE ================== */
+  /* ================== UPLOAD (bouton manuel) ================== */
   function onFileSelect(e) {
     const file = e.target.files?.[0];
     setImageFile(file || null);
@@ -127,8 +163,9 @@ export default function ServiceForm() {
   }
 
   async function uploadImage() {
+    // En création, on n’uploade plus manuellement : le submit s’en charge
     if (!isEdit) {
-      setErr("Enregistre d’abord le service pour obtenir un ID, puis uploade l’image.");
+      setErr("L’image sera envoyée automatiquement après l’enregistrement.");
       return;
     }
     if (!imageFile) {
@@ -139,18 +176,7 @@ export default function ServiceForm() {
     setErr("");
     try {
       await api.ensureCsrf();
-      const fd = new FormData();
-      fd.append("file", imageFile);
-      const res = await api.post(`/api/admin/services/${id}/image`, fd, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
-      setForm((f) => ({
-        ...f,
-        image_path: res.image_path ?? null,
-        image_path_url: res.image_url ?? null,
-      }));
-      setImageFile(null);
-      setImagePreview("");
+      await uploadImageFor(id);
     } catch (e2) {
       const msg =
         e2?.data?.message ||
@@ -202,7 +228,6 @@ export default function ServiceForm() {
             </p>
           </div>
           <div className="flex items-center gap-2">
-
             <Link
               to="/admin"
               className="btn-square inline-flex items-center justify-center px-4 h-11 font-semibold border border-zinc-600 hover:bg-zinc-900 transition-colors"
@@ -215,7 +240,9 @@ export default function ServiceForm() {
               disabled={saving}
               className="btn-square inline-flex items-center justify-center px-4 h-11 font-semibold bg-[#F6C90E] text-black border border-[#F6C90E] hover:bg-black hover:text-[#F6C90E] transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
             >
-              {saving ? "Enregistrement…" : "Enregistrer"}
+              {saving
+                ? (imageFile ? "Enregistrement..." : "Enregistrement…")
+                : "Enregistrer"}
             </button>
           </div>
         </header>
@@ -409,52 +436,59 @@ export default function ServiceForm() {
           </div>
 
           {/* Bloc image locale */}
-          <div className="space-y-4 border-t border-zinc-800 pt-6">
-            <h2 className="text-lg font-semibold text-zinc-200">
-              Image du service (upload local)
-            </h2>
+<div className="space-y-4 border-t border-zinc-800 pt-6">
+  <h2 className="text-lg font-semibold text-zinc-200">
+    Image du service (upload local)
+  </h2>
 
-            {resolvedImageForPreview ? (
-              <div className="w-full max-w-md">
-                <img
-                  src={resolvedImageForPreview}
-                  alt={form.name || "Aperçu"}
-                  className="w-full h-auto object-cover ring-1 ring-black/30"
-                />
-              </div>
-            ) : (
-              <p className="text-zinc-500 text-sm">Aucune image pour le moment.</p>
-            )}
+  {resolvedImageForPreview ? (
+    <div className="w-full max-w-md">
+      <img
+        src={resolvedImageForPreview}
+        alt={form.name || "Aperçu"}
+        className="w-full h-auto object-cover ring-1 ring-black/30"
+      />
+    </div>
+  ) : (
+    <p className="text-zinc-500 text-sm">Aucune image pour le moment.</p>
+  )}
 
-            <div className="flex flex-col md:flex-row items-start md:items-center gap-3">
-              <input
-                type="file"
-                accept="image/png,image/jpeg,image/webp"
-                onChange={onFileSelect}
-                className="text-sm file:mr-3 file:px-4 file:py-2 file:border file:border-zinc-600 file:bg-zinc-900 file:text-zinc-200 file:hover:bg-zinc-800"
-              />
-              <button
-                type="button"
-                onClick={uploadImage}
-                disabled={!imageFile || !isEdit}
-                className="btn-square inline-flex items-center justify-center px-4 h-10 font-semibold bg-[#F6C90E] text-black border border-[#F6C90E] hover:bg-black hover:text-[#F6C90E] transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
-              >
-                {isEdit ? "Uploader l’image" : "Enregistrer d’abord"}
-              </button>
-              {form.image_path_url && (
-                <button
-                  type="button"
-                  onClick={deleteImage}
-                  className="btn-square inline-flex items-center justify-center px-4 h-10 font-semibold border border-zinc-600 hover:bg-zinc-900 transition-colors"
-                >
-                  Supprimer l’image
-                </button>
-              )}
-            </div>
-            <p className="text-xs text-zinc-500">
-              Formats autorisés : JPG, JPEG, PNG, WEBP. Taille max : 2 Mo.
-            </p>
-          </div>
+  <div className="flex flex-col md:flex-row items-start md:items-center gap-3">
+    <input
+      type="file"
+      accept="image/png,image/jpeg,image/webp"
+      onChange={onFileSelect}
+      className="text-sm file:mr-3 file:px-4 file:py-2 file:border file:border-zinc-600 file:bg-zinc-900 file:text-zinc-200 file:hover:bg-zinc-800"
+    />
+
+    {/* ✅ Bouton “Enregistrer” identique à celui du haut */}
+    <button
+      type="submit"
+      form="service-form"
+      disabled={saving}
+      className="btn-square inline-flex items-center justify-center px-4 h-11 font-semibold bg-[#F6C90E] text-black border border-[#F6C90E] hover:bg-black hover:text-[#F6C90E] transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
+    >
+      {saving
+        ? (imageFile ? "Enregistrement..." : "Enregistrement…")
+        : "Enregistrer"}
+    </button>
+
+    {form.image_path_url && (
+      <button
+        type="button"
+        onClick={deleteImage}
+        className="btn-square inline-flex items-center justify-center px-4 h-10 font-semibold border border-zinc-600 hover:bg-zinc-900 transition-colors"
+      >
+        Supprimer l’image
+      </button>
+    )}
+  </div>
+
+  <p className="text-xs text-zinc-500">
+    Formats autorisés : JPG, JPEG, PNG, WEBP. Taille max : 2 Mo.
+  </p>
+</div>
+
         </form>
       </section>
     </main>

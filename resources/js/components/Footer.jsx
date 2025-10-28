@@ -1,20 +1,20 @@
 import React from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 
-const CTA_PRIMARY_LABEL = "Contactez-nous";
-const CTA_PRIMARY_TO = "/contact";
-
-const LINKS = [
-  { label: "Accueil", to: "/" },
-  { label: "Contactez-nous", to: "/contact" },
-  { label: "Mentions légales", to: "/mentions-legales" },
-];
+// ✅ On réutilise les constantes du Header pour ne pas dupliquer les infos
+import {
+  CTA_URL,
+  TEL_DISPLAY,
+  TEL_LINK,
+  EMAIL_DISPLAY,
+  EMAIL_LINK,
+  ADDRESS_DISPLAY,
+  MAPS_LINK,
+  SERVICE_AREA,
+} from "./header/constants";
 
 const COMPANY = {
   name: "2DK Électricité",
-  phone: "05 00 00 00 00",
-  email: "contact@2dk.fr",
-  address: "Métropole de Bordeaux (CUB)",
 };
 
 export default function Footer() {
@@ -27,13 +27,19 @@ export default function Footer() {
 
   const handleContact = (e) => {
     e.preventDefault();
-    if (location.pathname === CTA_PRIMARY_TO) {
+    if (location.pathname === CTA_URL) {
       scrollTop();
     } else {
-      navigate(CTA_PRIMARY_TO);
+      navigate(CTA_URL);
       setTimeout(() => scrollTop(), 0);
     }
   };
+
+  const LINKS = [
+    { label: "Accueil", to: "/" },
+    { label: "Contactez-nous", to: CTA_URL },
+    { label: "Mentions légales", to: "/mentions-legales" },
+  ];
 
   return (
     <footer
@@ -47,7 +53,7 @@ export default function Footer() {
           <div className="space-y-4">
             <div className="text-2xl font-extrabold text-white">{COMPANY.name}</div>
             <p className="text-zinc-100">
-              Des interventions rapides et soignées sur la CUB de Bordeaux.
+              Des interventions rapides et soignées sur {SERVICE_AREA || "la métropole bordelaise"}.
             </p>
 
             {/* Coordonnées */}
@@ -56,8 +62,8 @@ export default function Footer() {
                 <svg className="h-4 w-4" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
                   <path d="M2 3a1 1 0 011-1h3a1 1 0 011 .78l.72 3.1a1 1 0 01-.29.97l-1.7 1.7a18 18 0 007.56 7.56l1.7-1.7a1 1 0 01.97-.29l3.1.72a1 1 0 01.78 1V21a1 1 0 01-1 1h-2C8.82 22 2 15.18 2 6V4a1 1 0 011-1z"/>
                 </svg>
-                <a href="tel:0500000000" className="hover:text-[#F6C90E] transition-colors">
-                  {COMPANY.phone}
+                <a href={TEL_LINK} className="hover:text-[#F6C90E] transition-colors">
+                  {TEL_DISPLAY}
                 </a>
               </li>
 
@@ -65,8 +71,8 @@ export default function Footer() {
                 <svg className="h-4 w-4" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
                   <path d="M2 6.5A2.5 2.5 0 0 1 4.5 4h15A2.5 2.5 0 0 1 22 6.5v11A2.5 2.5 0 0 1 19.5 20h-15A2.5 2.5 0 0 1 2 17.5v-11ZM5 7l7 4.5L19 7H5Z"/>
                 </svg>
-                <a href={`mailto:${COMPANY.email}`} className="hover:text-[#F6C90E] transition-colors">
-                  {COMPANY.email}
+                <a href={EMAIL_LINK} className="hover:text-[#F6C90E] transition-colors">
+                  {EMAIL_DISPLAY}
                 </a>
               </li>
 
@@ -74,7 +80,18 @@ export default function Footer() {
                 <svg className="h-4 w-4" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
                   <path d="M12 2C8.13 2 5 5.13 5 9c0 7 7 13 7 13s7-6 7-13c0-3.87-3.13-7-7-7zM12 11.5a2.5 2.5 0 110-5 2.5 2.5 0 010 5z"/>
                 </svg>
-                {COMPANY.address}
+                {MAPS_LINK ? (
+                  <a
+                    href={MAPS_LINK}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="hover:text-[#F6C90E] transition-colors"
+                  >
+                    {ADDRESS_DISPLAY}
+                  </a>
+                ) : (
+                  <span>{ADDRESS_DISPLAY}</span>
+                )}
               </li>
             </ul>
           </div>
@@ -89,25 +106,14 @@ export default function Footer() {
                     className="text-zinc-100 hover:text-[#F6C90E] transition-colors"
                     to={l.to}
                     onClick={(e) => {
-                      if (l.to === "/contact") {
+                      if (l.to === CTA_URL || l.to === "/") {
                         e.preventDefault();
-                        if (location.pathname === "/contact") {
+                        if (location.pathname === l.to) {
                           scrollTop();
                         } else {
-                          navigate("/contact");
+                          navigate(l.to);
                           setTimeout(() => scrollTop(), 0);
                         }
-                        return;
-                      }
-                      if (l.to === "/") {
-                        e.preventDefault();
-                        if (location.pathname === "/") {
-                          scrollTop();
-                        } else {
-                          navigate("/");
-                          setTimeout(() => scrollTop(), 0);
-                        }
-                        return;
                       }
                     }}
                   >
@@ -129,7 +135,7 @@ export default function Footer() {
             </h2>
 
             <Link
-              to={CTA_PRIMARY_TO}
+              to={CTA_URL}
               onClick={handleContact}
               className="btn-red btn-square btn-halo w-fit mt-8"
             >
@@ -142,7 +148,7 @@ export default function Footer() {
               >
                 <path d="M2 6.5A2.5 2.5 0 0 1 4.5 4h15A2.5 2.5 0 0 1 22 6.5v11A2.5 2.5 0 0 1 19.5 20h-15A2.5 2.5 0 0 1 2 17.5v-11ZM5 7l7 4.5L19 7H5Z" />
               </svg>
-              <span>{CTA_PRIMARY_LABEL}</span>
+              <span>Contactez-nous</span>
             </Link>
           </div>
         </div>
