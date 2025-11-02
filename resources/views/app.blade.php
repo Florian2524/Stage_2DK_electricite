@@ -11,8 +11,11 @@
 
   @viteReactRefresh
   @vite('resources/js/app.jsx')
+
 </head>
 <body class="h-full bg-white text-zinc-900 antialiased">
+
   <div id="app"></div>
+  
 </body>
 </html>
