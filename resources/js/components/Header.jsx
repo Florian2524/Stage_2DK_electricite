@@ -37,7 +37,9 @@ export default function Header() {
   const [servicesError, setServicesError] = useState("");
 
   // Surbrillance Accueil/Services
-  const [section, setSection] = useState/** @type {null | 'home' | 'services'} */(null);
+  const [section, setSection] = useState/** @type {null | 'home' | 'services'} */(
+    null
+  );
   const location = useLocation();
   const navigate = useNavigate();
   const hoverActiveRef = useRef(false);
@@ -76,8 +78,12 @@ export default function Header() {
     const onScroll = () => {
       const y = window.scrollY || 0;
       const now = performance.now();
-      const next = y >= SHRINK_DOWN ? true : y <= EXPAND_UP ? false : isShrunk;
-      if (next !== isShrunk && now - lastSwitchRef.current >= SWITCH_COOLDOWN_MS) {
+      const next =
+        y >= SHRINK_DOWN ? true : y <= EXPAND_UP ? false : isShrunk;
+      if (
+        next !== isShrunk &&
+        now - lastSwitchRef.current >= SWITCH_COOLDOWN_MS
+      ) {
         lastSwitchRef.current = now;
         setIsShrunk(next);
       }
@@ -94,7 +100,8 @@ export default function Header() {
   const goTo = (id) => {
     const el = document.getElementById(id);
     if (!el) return;
-    const y = window.scrollY + el.getBoundingClientRect().top - getHeaderH() - 8;
+    const y =
+      window.scrollY + el.getBoundingClientRect().top - getHeaderH() - 8;
     window.scrollTo({ top: Math.max(0, y), behavior: "smooth" });
     requestAnimationFrame(recomputeSection);
     setTimeout(recomputeSection, 120);
@@ -158,7 +165,9 @@ export default function Header() {
       }
     }
     load();
-    return () => { cancel = true; };
+    return () => {
+      cancel = true;
+    };
   }, []);
 
   // Styles liens nav
@@ -170,10 +179,14 @@ export default function Header() {
 
   // États actifs courants
   const accueilActive =
-    location.pathname === "/" ? section === "home" : location.pathname === "/";
+    location.pathname === "/"
+      ? section === "home"
+      : location.pathname === "/";
   const servicesRoute = location.pathname.startsWith("/services");
   const servicesActive =
-    location.pathname === "/" ? section === "services" : servicesRoute;
+    location.pathname === "/"
+      ? section === "services"
+      : servicesRoute;
 
   // Services hover
   const openServices = () => {
@@ -196,8 +209,9 @@ export default function Header() {
       className="sticky top-0 z-50 transition-all duration-200 bg-white"
       aria-label="En-tête du site"
     >
-      <div className={`${isShrunk ? "py-2" : "py-3"}`}>
-        <div className="container px-0">
+      <div className={isShrunk ? "py-2" : "py-3"}>
+        {/* 🔴 ICI : on laisse uniquement `container` pour garder les marges latérales */}
+        <div className="container">
           <div className="flex items-center justify-between gap-3 text-neutral-900 min-w-0">
             {/* Logo */}
             <a
